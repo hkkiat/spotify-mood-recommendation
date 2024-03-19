@@ -20,7 +20,7 @@ There are 5 key features:
 4. Recommendation
 5. Discover Section
 
-View our mockup [here] <<Placeholder>>
+View our mockup [here](https://www.figma.com/file/ZHsnruopY2JYJsaQqxQ0HS/1.-Mood-Log-Page?type=design&node-id=0%3A1&mode=design&t=Gb3aBS2kBKfZR4EE-1)
 
 ## Installation
 
