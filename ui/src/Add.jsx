@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Add = ({ bookTraveller }) => {
   const handleSubmit = (e) => {
     e.preventDefault();

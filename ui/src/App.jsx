@@ -1,82 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import { Navbar, Nav } from 'react-bootstrap';
 import './style.css';
-import Add from './Add.jsx';
 import graphQLFetch from './graphql.js';
+import Add from './Add.jsx';
 
-const Homepage = () => {
-  return (
-    <div>
-      <h5>Placeholder for Homepage</h5>
-    </div>
-  );
-};
+class Homepage extends React.Component {
+	constructor() {
+	super();
+	}
+	render(){
+	return (
+	<div>
+		<h5>Placeholder for Homepage</h5>
+	</div>);
+	}
+}
+class TicketToRide extends React.Component {
+  constructor() {
+    super();
+    this.state = { travellers: [], selector: 1};
+    this.bookTraveller = this.bookTraveller.bind(this);
+    this.deleteTraveller = this.deleteTraveller.bind(this);
+    this.blacklistTraveller = this.blacklistTraveller.bind(this);
+  }
 
-const MoodTracker = () => {
-  const [mood, setMood] = useState([]);
-  const [selector, setSelector] = useState(1);
+  setSelector(value)
+  {
+	  this.setState({selector: value});
+  }
+  componentDidMount() {
+    this.loadData();
+  }
 
-  const setSelectorValue = (value) => {
-    setSelector(value);
-  };
+  async loadData() {
+    /*Q3: Write code for GraphQL API call to fetch list of travellers
+     * - Write the query
+     * - Make a call to graphQLFetch with parameter: query
+     * - Post process data and take some action (e.g., re-load UI)  */
+  
 
-  const loadData = async () => {
-    // Write code for GraphQL API call to fetch list of travellers
-    // Write the query
-    // Make a call to graphQLFetch with parameter: query
-    // Post process data and take some action (e.g., re-load UI)
-  };
+     /*End of Q3*/
+  }
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  async bookTraveller(passenger) {
+    /*Q3: Write code for GraphQL API call to add a traveller
+     * - Write the mutation
+     * - Make a call to graphQLFetch with two parameters: mutation query, {variable}
+     * - Post process data and take some action (e.g., re-load UI)  */
+  
 
-  const bookTraveller = async (passenger) => {
-    // Write code for GraphQL API call to add a traveller
-  };
+     /*End of Q3*/
+  }
 
-  const deleteTraveller = async (passenger) => {
-    // Write code for GraphQL API call to delete a traveller
-  };
+  async deleteTraveller(passenger) {
+    /*Q3: Write code for GraphQL API call to delete a traveller
+     * - Write the mutation
+     * - Make a call to graphQLFetch with two parameters: mutation query, {variable}
+     * - Post process data and take some action (e.g., re-load UI)  */
+  
 
-  const blacklistTraveller = async (passenger) => {
-    // Code to blacklist traveller at the back-end
-    console.log("Pending code to Blacklist", passenger);
-    const query = `
-      mutation mymutation($passenger: String!){
-        blacklistTraveller(travellername: $passenger)
-      }
-    `;
-    const response = await graphQLFetch(query, { passenger });
+     /*End of Q3*/
+  }
+  async blacklistTraveller(passenger) {
+    /*Q4: Code to blacklist traveller at the back-end
+     * - Write a mutation to blacklist traveller by providing the name.
+     * - Make a call to graphQLFetch to execute the query.
+     * - graphQLFetch accepts two parameters: query and {variable}  
+     * - This GraphQL API call does not return anything. */
+    console.log("Pending code to Blacklist", passenger); 
+    const query =`mutation mymutation($passenger: String!){
+	      blacklistTraveller(travellername: $passenger)
+    }`; 
+    const response = await graphQLFetch(query, {passenger});
     console.log("Response from server", response);
-    // End of Code to blacklist traveller
-  };
-
-  return (
-    <div>
-      <Navbar bg="light" expand="lg" className="flex-column">
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="flex-column">
-            <Nav.Link onClick={() => setSelectorValue(1)}>Logout</Nav.Link>
-            <Nav.Link onClick={() => setSelectorValue(2)}>Mood Log</Nav.Link>
-            <Nav.Link onClick={() => setSelectorValue(3)}>Analysis</Nav.Link>
-            <Nav.Link onClick={() => setSelectorValue(4)}>Recommend</Nav.Link>
-            <Nav.Link onClick={() => setSelectorValue(5)}>Discover</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
+    
+    /*End of Q4*/
+  }
+  render() {
+    return (
       <div>
-        {selector === 1 ? <Homepage /> : <hr />}
-        {selector === 2 ? <Display travellers={travellers} /> : <hr />}
-        {selector === 3 ? <Add bookTraveller={bookTraveller} /> : <hr />}
-        {selector === 4 ? <Delete deleteTraveller={deleteTraveller} /> : <hr />}
-        {selector === 5 ? <Blacklist blacklistTraveller={blacklistTraveller} /> : <hr />}
+        <h1>Ticket To Ride</h1>
+	<div>
+        <button onClick={()=>this.setSelector(1)}>Homepage</button>
+        <button onClick={()=>this.setSelector(2)}>Display Travellers</button>
+        <button onClick={()=>this.setSelector(3)}>Add Traveller</button>
+        <button onClick={()=>this.setSelector(4)}>Delete Traveller</button>
+        <button onClick={()=>this.setSelector(5)}>Blacklist Traveller</button>
+	</div>
+	{
+		this.state.selector === 1? <Homepage />:<hr/>
+	}
+	{
+		this.state.selector === 2? <Display travellers={this.state.travellers} />:<hr/>
+	}
+	{
+		this.state.selector === 3? <Add bookTraveller={this.bookTraveller} />: <hr/>
+	}
+	{
+		this.state.selector === 4? <Delete deleteTraveller={this.deleteTraveller} />: <hr/>
+	}
+	{
+		this.state.selector === 5? <Blacklist blacklistTraveller={this.blacklistTraveller} />: <hr/>
+	}
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
-const element = <MoodTracker />;
+const element = <TicketToRide />;
 
 ReactDOM.render(element, document.getElementById('contents'));
