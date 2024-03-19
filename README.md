@@ -30,6 +30,11 @@ Instructions on how to install and set up the project.
 
 Instructions and examples on how to use the project or any relevant code snippets.
 
+$ npm install
+$ npm run compile
+$ npm run build
+$ npm start
+
 ## Contributing
 
 Guidelines for contributing to the project, including information on how to report issues, propose features, and submit pull requests.
