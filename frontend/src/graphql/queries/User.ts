@@ -9,3 +9,12 @@ export const userQuery = gql`
     }
   }
 `;
+
+export const dummyAPIQuery = gql`
+  query dummyAPI {
+    dummyAPI {
+      id
+      name
+    }
+  }
+`;

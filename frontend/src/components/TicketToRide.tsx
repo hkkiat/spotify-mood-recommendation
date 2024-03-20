@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import Homepage from './HomePage';
 import { defaultClient } from '../Client';
+import { dummyAPIQuery } from '../graphql/queries/User';
 
 const TicketToRide = () => {
   const [travellers, setTravellers] = useState([]);
   const [selector, setSelector] = useState(1);
 
   const loadData = async () => {
-    const res = await defaultClient.query<DummyAPI>({
-      query: dummyAPIQuery
-    })
-    
     console.log('Loading data');
+    try {
+      const res = await defaultClient.query({
+        query: dummyAPIQuery,
+      });
+      console.log(res);
+    } catch (e) {
+      console.error(e);
+    }
+
     // to query from db
   };
 

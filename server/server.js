@@ -3,6 +3,7 @@ const express = require('express');
 const { ApolloServer, UserInputError } = require('apollo-server-express');
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
+const { MongoClient } = require('mongodb');
 
 //Resolver1: Query
 async function listTravellers()
@@ -163,20 +164,37 @@ const app = express();
 app.use(express.static('public'));
 
 const server = new ApolloServer({
-  typeDefs: fs.readFileSync('./server/travellerschema.graphql', 'utf-8'),
+  typeDefs: fs.readFileSync('./travellerschema.graphql', 'utf-8'),
   resolvers,
   formatError: error => {
     console.log(error);
     return error;
   },
 });
-server.applyMiddleware({ app, path: '/graphql' });
+(async function() {
+  try {
+    await server.start();
+    server.applyMiddleware({ app, path: '/graphql' });
+
+  } catch (err) {
+    console.log('ERROR:', err);
+  }
+})();
+
+async function connectToDb() {
+  const url = 'mongodb://localhost/tickettoride';
+  const client = new MongoClient(url, { useNewUrlParser: true });
+  await client.connect();
+  console.log('Connected to Ticket To Ride MongoDB at', url);
+  db = client.db();
+}
+
 
 (async function () {
   try {
     await connectToDb();
-    app.listen(3000, function () {
-      console.log('App started on port 3000');
+    app.listen(8000, function () {
+      console.log('App started on port 8000');
     });
   } catch (err) {
     console.log('ERROR:', err);
