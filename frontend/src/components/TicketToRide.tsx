@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Homepage from './HomePage';
 import { defaultClient } from '../Client';
 import { dummyAPIQuery } from '../graphql/queries/User';
+import { DummyAPI } from '../graphql/queries/__generated__/dummyAPI';
 
 const TicketToRide = () => {
   const [travellers, setTravellers] = useState([]);
@@ -10,8 +11,9 @@ const TicketToRide = () => {
   const loadData = async () => {
     console.log('Loading data');
     try {
-      const res = await defaultClient.query({
+      const res = await defaultClient.query<DummyAPI>({
         query: dummyAPIQuery,
+        fetchPolicy: 'network-only',
       });
       console.log(res);
     } catch (e) {

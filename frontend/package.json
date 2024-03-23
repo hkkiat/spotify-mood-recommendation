@@ -10,11 +10,14 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/graphql": "^14.5.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.91",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",
+    "apollo": "^2.34.0",
     "apollo-boost": "^0.4.9",
+    "apollo-client": "^2.6.10",
     "babel-jest": "^27.4.2",
     "babel-loader": "^8.2.3",
     "babel-plugin-named-asset-import": "^0.3.8",
@@ -66,10 +69,14 @@
     "webpack-manifest-plugin": "^4.0.2",
     "workbox-webpack-plugin": "^6.4.1"
   },
+  "overrides": {
+    "graphql": "15.5.0"
+  },
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "gqlsync": "./gqlsync.sh"
   },
   "eslintConfig": {
     "extends": [

@@ -1,4 +1,4 @@
-'use strict';
+
 
 const fs = require('fs');
 const path = require('path');
@@ -725,7 +725,7 @@ module.exports = function (webpackEnv) {
       !disableESLintPlugin &&
         new ESLintPlugin({
           // Plugin options
-          extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
+          extensions: ['ts', 'tsx', 'mjs', 'js', 'jsx'],
           formatter: require.resolve('react-dev-utils/eslintFormatter'),
           eslintPath: require.resolve('eslint'),
           failOnError: !(isEnvDevelopment && emitErrorsAsWarnings),

@@ -5,7 +5,7 @@ import * as configs from './configs';
 import { createHttpLink } from 'apollo-link-http';
 
 const httpLink = createHttpLink({
-  credentials: 'include',
+  //credentials: 'include',
   uri: `${configs.clientBackendApiUrl}/graphql`,
 });
 
