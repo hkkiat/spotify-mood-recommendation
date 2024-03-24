@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "apollo-server-express": "^2.26.0",
+    "express": "^4.16.4",
+    "mongodb": "^3.7.3"
+  }
+}
