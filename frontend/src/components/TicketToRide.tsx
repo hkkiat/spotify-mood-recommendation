@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Homepage from './HomePage';
+import Homepage from './homepage';
 import { defaultClient } from '../Client';
 import { dummyAPIQuery } from '../graphql/queries/User';
 import { DummyAPI } from '../graphql/queries/__generated__/dummyAPI';
