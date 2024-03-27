@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
-import bootstrap from 'bootstrap';
+import React from 'react';
+import Layout from './layout';
 import Header from './header';
-import Footer from './footer'
-import Sidebar from './sidebar';
 
-const MoodLog = () => {
+/*
+This component is used to display the moodlog page
+*/
 
+interface MoodLogProps {
+  setCurrentPage: (page: string) => void;
+  currentPage: string;
+}
+
+const MoodLog: React.FC<MoodLogProps> = ({ currentPage, setCurrentPage }) => {
   return (
-    <div>
-      <Header></Header>
-      <div className='container-fluid bg-danger'>
-        <Sidebar></Sidebar>
-      </div>
-      <Footer></Footer>
-    </div>
+    <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
+      BOILER PLATE CONTENT GOES HERE
+    </Layout>
   );
 }
 
