@@ -6,7 +6,6 @@ import Sidebar from './sidebar';
 
 const MoodLog = () => {
 
-
   return (
     <div>
       <Header></Header>
