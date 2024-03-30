@@ -1,5 +1,7 @@
 import React from 'react';
 import Layout from '../common/layout';
+import OverallQuestion from './overallfeeling';
+import HappyRange from './happyrange';
 
 /*
 This component is used to display the moodlog page
@@ -13,7 +15,8 @@ interface MoodLogProps {
 const MoodLog: React.FC<MoodLogProps> = ({ currentPage, setCurrentPage }) => {
   return (
     <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
-      BOILER PLATE CONTENT GOES HERE
+      <OverallQuestion></OverallQuestion>
+      <HappyRange></HappyRange>
     </Layout>
   );
 }
