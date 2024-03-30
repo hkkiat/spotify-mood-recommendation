@@ -1,6 +1,5 @@
 import React from 'react';
-import Layout from './layout';
-import Header from './header';
+import Layout from '../common/layout';
 
 /*
 This component is used to display the moodlog page

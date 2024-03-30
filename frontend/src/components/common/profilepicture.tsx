@@ -1,5 +1,4 @@
-import React from 'react';
-import profilePic from '../images/sample_profile_pic.jpg'; // Import the image
+import profilePic from '../../images/sample_profile_pic.jpg'; // Import the image
 
 /*
 This component is used to display profile picture

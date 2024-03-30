@@ -1,6 +1,5 @@
-import React from 'react';
 import NavItem from './navitem';
-import ProfilePicture from './profilepicture';
+import UserProfile from './profile';
 
 /*
 This component is used to display navitem components
@@ -11,10 +10,11 @@ interface SideBarProps {
 }
 
 function Sidebar({ currentPage }: SideBarProps) {
+
   return (
     <div className="sidebar">
       <ul className="nav flex-column">
-        <ProfilePicture></ProfilePicture>
+        <UserProfile></UserProfile>
         <NavItem linkText="Home" active={currentPage === '/'} />
         <NavItem linkText="Logout" active={currentPage === '/logout'} />
         <NavItem linkText="Mood Log" active={currentPage === '/moodlog'} />
