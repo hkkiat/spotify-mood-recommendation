@@ -21,10 +21,10 @@ const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, children }
             <Header />
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-md-3">
+                    <div className="col-md-2">
                         <Sidebar currentPage={currentPage} />
                     </div>
-                    <div className="col-md-9">
+                    <div className="col-md-10">
                         {/* Render the main content passed as children */}
                         {children}
                     </div>

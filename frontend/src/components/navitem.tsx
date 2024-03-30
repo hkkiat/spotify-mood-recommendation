@@ -15,8 +15,10 @@ function NavItem({ linkText, active }: NavItemProps) {
   const path = `/${linkText.replace(/\s+/g, '').toLowerCase()}`;
 
   return (
-    <li className={`nav-item bg-light`}>
-      <Link to={path} className={`nav-link btn ${active ? 'btn-success' : 'btn-secondary'}`}>{linkText}</Link>
+    <li className={`nav-item m-1`}>
+      <Link to={path} className={`nav-link btn rounded`}
+        style={{ backgroundColor: active ? '#008080' : '#8D8DDA', color: '#fff' }}
+      >{linkText}</Link>
     </li>
   );
 }
