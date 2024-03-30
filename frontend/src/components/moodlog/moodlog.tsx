@@ -2,6 +2,7 @@ import React from 'react';
 import Layout from '../common/layout';
 import OverallQuestion from './overallfeeling';
 import HappyRange from './happyrange';
+import MostImpact from './mostimpact';
 
 /*
 This component is used to display the moodlog page
@@ -17,6 +18,7 @@ const MoodLog: React.FC<MoodLogProps> = ({ currentPage, setCurrentPage }) => {
     <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
       <OverallQuestion></OverallQuestion>
       <HappyRange></HappyRange>
+      <MostImpact></MostImpact>
     </Layout>
   );
 }

@@ -3,7 +3,7 @@ import styles from '../../css/moodlog.module.css'
 
 
 /*
-This component is used to display the overall feeling open-ended questionnaire
+This component is used to display the happy range bar
 */
 
 function HappyRange() {
