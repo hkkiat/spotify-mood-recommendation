@@ -5,6 +5,10 @@
     font-weight: bold;
 }
 
+/* 
+STYLING FOR CHECKBOX COMPONENT
+*/
+
 .checkboxContainer {
     display: flex;
     flex-direction: column;

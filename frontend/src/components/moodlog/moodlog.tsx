@@ -3,6 +3,7 @@ import Layout from '../common/layout';
 import OverallQuestion from './overallfeeling';
 import HappyRange from './happyrange';
 import MostImpact from './mostimpact';
+import Calendar from './calendar';
 
 /*
 This component is used to display the moodlog page
@@ -16,6 +17,7 @@ interface MoodLogProps {
 const MoodLog: React.FC<MoodLogProps> = ({ currentPage, setCurrentPage }) => {
   return (
     <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
+      <Calendar></Calendar>
       <OverallQuestion></OverallQuestion>
       <HappyRange></HappyRange>
       <MostImpact></MostImpact>
