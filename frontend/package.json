@@ -26,6 +26,7 @@
     "babel-plugin-named-asset-import": "^0.3.8",
     "babel-preset-react-app": "^10.0.1",
     "bfj": "^7.0.2",
+    "bootstrap": "^5.3.3",
     "browserslist": "^4.18.1",
     "camelcase": "^6.2.1",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
@@ -54,6 +55,7 @@
     "react-app-polyfill": "^3.0.0",
     "react-dev-utils": "^12.0.1",
     "react-dom": "^18.2.0",
+    "react-icons": "^5.0.1",
     "react-refresh": "^0.11.0",
     "react-router": "^6.22.3",
     "react-router-dom": "^6.22.3",
@@ -154,5 +156,8 @@
     "presets": [
       "react-app"
     ]
+  },
+  "devDependencies": {
+    "@types/bootstrap": "^5.2.10"
   }
 }
