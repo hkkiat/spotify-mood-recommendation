@@ -1,6 +1,7 @@
 const { Kind } = require('graphql/language');
 const { GraphQLScalarType } = require('graphql');
 const { listTravellers, addTraveller, deleteTraveller, findBlackListTraveller, blacklistTravellerName,  blacklistTravellerPhone} = require('./TravellerResolver');
+const { getOverallFeeling } = require('./MoodlogResolver');
 
 const GraphQLDate = new GraphQLScalarType({
   name: 'GraphQLDate',
@@ -27,6 +28,7 @@ const resolvers = {
   Query: {
     listTravellers,
     findBlackListTraveller,
+    getOverallFeeling,
   },
   Mutation: {
     addTraveller,

@@ -1,6 +1,6 @@
 import React from 'react';
 import Layout from '../common/layout';
-import OverallQuestion from './overallfeeling';
+import OverallFeeling from './overallfeeling';
 import HappyRange from './happyrange';
 import MostImpact from './mostimpact';
 import Calendar from './calendar';
@@ -18,7 +18,7 @@ const MoodLog: React.FC<MoodLogProps> = ({ currentPage, setCurrentPage }) => {
   return (
     <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
       <Calendar></Calendar>
-      <OverallQuestion></OverallQuestion>
+      <OverallFeeling></OverallFeeling>
       <HappyRange></HappyRange>
       <MostImpact></MostImpact>
     </Layout>

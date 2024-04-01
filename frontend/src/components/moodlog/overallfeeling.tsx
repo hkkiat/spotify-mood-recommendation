@@ -4,7 +4,7 @@ import styles from '../../css/moodlog.module.css'
 This component is used to display the overall feeling open-ended questionnaire
 */
 
-function OverallQuestion() {
+function OverallFeeling() {
 
     return (
         <div>
@@ -15,4 +15,4 @@ function OverallQuestion() {
     );
 }
 
-export default OverallQuestion;
+export default OverallFeeling;
