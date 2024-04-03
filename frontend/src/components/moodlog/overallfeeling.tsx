@@ -1,16 +1,29 @@
-import styles from '../../css/moodlog.module.css'
+import React, { FC, ChangeEvent, useState } from 'react';
+import styles from '../../css/moodlog.module.css';
 
-/*
-This component is used to display the overall feeling open-ended questionnaire
-*/
+interface OverallFeelingProps {
+    onOverallFeelingChange: (text: string) => void;
+}
 
-function OverallFeeling() {
+const OverallFeeling: FC<OverallFeelingProps> = ({ onOverallFeelingChange }) => {
+    const [feelingText, setFeelingText] = useState('');
+
+    const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        const newValue = event.target.value;
+        setFeelingText(newValue);
+        onOverallFeelingChange(newValue); // Call the function passed from parent
+    };
 
     return (
         <div>
             <label className={`form-label mt-2 ${styles.moodlogquestionheader}`} htmlFor="textAreaExample1">How do I feel today?</label>
-            <textarea className="form-control " id="textAreaExample1" rows={4}></textarea>
-
+            <textarea
+                className="form-control"
+                id="textAreaExample1"
+                rows={4}
+                value={feelingText}
+                onChange={handleTextareaChange}
+            ></textarea>
         </div>
     );
 }
