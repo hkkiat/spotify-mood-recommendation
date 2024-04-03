@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useState, useMemo } from 'react';
+import { FC, FormEvent, useState } from 'react';
 import Layout from '../common/layout';
 import OverallFeeling from './overallfeeling';
 import HappyRange from './happyrange';
@@ -10,23 +10,24 @@ import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/_
 
 interface MoodLogProps {
   email: string;
-  currentPage: string; // Add currentPage prop
+  currentPage: string;
 }
 
-const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
-
-  // ALL THE STATES
-  const [overallFeeling, setOverallFeeling] = useState('');
-  
-
-  console.log('Fetching all moodlogs for this email111: ', email)
-  // Fetch mood logs data
+// Custom hook to fetch mood logs
+const allMoodLogs = (email: string) => {
   const { loading, error, data } = useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
     getAllMoodLogsQuery,
     {
       variables: { email: email },
     }
   );
+
+  return { loading, error, data };
+};
+
+const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
+  const [overallFeeling, setOverallFeeling] = useState('');
+  const { loading, error, data } = allMoodLogs(email);
 
   // Handle loading state
   if (loading) return <p>Loading...</p>;
@@ -50,8 +51,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   };
 
   return (
-    <Layout currentPage={currentPage}> {/* Pass currentPage to Layout */}
-      {/* Render components */}
+    <Layout currentPage={currentPage}>
       <Calendar />
       <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />
       <HappyRange />
