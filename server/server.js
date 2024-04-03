@@ -4,7 +4,7 @@ const { ApolloServer, UserInputError } = require('apollo-server-express');
 const { backendPort } = require('./config');
 const { connectToDb } = require('./db');
 const resolvers = require('./resolvers/MainResolver');
-
+const cors = require('cors'); // Import the cors middleware
 
 const app = express();
 app.use(express.static('public'));
@@ -21,12 +21,15 @@ const server = new ApolloServer({
   },
 });
 
+// Enable CORS for all routes
+app.use(cors());
+
 (async function() {
   try {
     await server.start();
     server.applyMiddleware({ app, path: '/graphql' });
 
-  } catch (err) {
+} catch (err) {
     console.log('ERROR:', err);
   }
 })();

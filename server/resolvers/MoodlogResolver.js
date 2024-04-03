@@ -20,7 +20,7 @@ async function getAllMoodLogs(_, { email }, { db }) {
 
 async function createMoodLog(_, { moodlog }, { db }) {
   try {
-    console.log(moodlog)
+    console.log("Creating moodlog...", moodlog)
     const collection = db.collection('moodlog');
 
     // Insert the moodlog into the database

@@ -9,13 +9,10 @@ This component is used to combine the Header, Sidebar, Footer components
 
 interface LayoutProps {
     currentPage: string;
-    setCurrentPage: (page: string) => void;
     children: ReactNode; // Define children prop
 }
 
-const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, children }) => {
-    setCurrentPage('/moodlog');
-
+const Layout: React.FC<LayoutProps> = ({ currentPage, children }) => {
     return (
         <div>
             <Header />

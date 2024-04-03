@@ -1,6 +1,6 @@
 import { gql } from 'apollo-boost';
 
-export const getAllMoodLogs = gql`
+export const getAllMoodLogsQuery = gql`
 query getAllMoodLogs($email: String!) {
   getAllMoodLogs(email: $email) {
     _id
