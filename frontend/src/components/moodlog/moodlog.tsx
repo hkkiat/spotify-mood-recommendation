@@ -1,4 +1,4 @@
-import { FC, FormEvent, useState } from 'react';
+import React, { FC, FormEvent, useState, useEffect } from 'react';
 import Layout from '../common/layout';
 import OverallFeeling from './overallfeeling';
 import HappyRange from './happyrange';
@@ -14,7 +14,7 @@ interface MoodLogProps {
 }
 
 // Custom hook to fetch mood logs
-const allMoodLogs = (email: string) => {
+const useMoodLogs = (email: string) => {
   const { loading, error, data } = useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
     getAllMoodLogsQuery,
     {
@@ -27,7 +27,9 @@ const allMoodLogs = (email: string) => {
 
 const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   const [overallFeeling, setOverallFeeling] = useState('');
-  const { loading, error, data } = allMoodLogs(email);
+  const [happyRangeValue, setHappyRangeValue] = useState(0);
+
+  const { loading, error, data } = useMoodLogs(email);
 
   // Handle loading state
   if (loading) return <p>Loading...</p>;
@@ -43,21 +45,27 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     setOverallFeeling(text);
   };
 
+  // handle range change
+  const handleHappyRangeChange = (value: number) => {
+    setHappyRangeValue(value); // Update the happy range value in the state
+  };
+
   // handle submit
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     // Perform actions with the submitted data, such as executing the GraphQL query
     console.log('Overall feeling submitted:', overallFeeling);
+    console.log("Happy range submitted:", happyRangeValue)
   };
 
   return (
     <Layout currentPage={currentPage}>
       <Calendar />
       <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />
-      <HappyRange />
-      <MostImpact />
+      <HappyRange onHappyRangeChange={handleHappyRangeChange} />
+      <MostImpact/>
       <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-primary" onClick={handleSubmit}>Submit Overall Feeling</button>
+        <button className="btn btn-primary mb-2" onClick={handleSubmit}>Log my mood in!</button>
       </div>
     </Layout>
   );
