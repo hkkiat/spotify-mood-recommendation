@@ -20,16 +20,16 @@ db.blacklist.remove({});
 const initialTravellers = [
     {
       id: 1,
-      name: "Jack",
-      phone: 88885555,
+      name: "hello",
+      phone: 456456456,
       gender: "Male",
       isMember: "Yes",
       bookingTime: new Date(),
     },
     {
       id: 2,
-      name: "Rose",
-      phone: 88884444,
+      name: "world",
+      phone: 77778888,
       gender: "Female",
       isMember: "No",
       bookingTime: new Date(),
