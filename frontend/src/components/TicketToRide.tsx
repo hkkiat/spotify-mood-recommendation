@@ -1,66 +1,33 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import Homepage from './HomePage';
+import React, { useEffect, useState } from 'react';
+import Homepage from './homepage';
 import { defaultClient } from '../Client';
 import { dummyAPIQuery } from '../graphql/queries/User';
-import { DummyAPI } from '../graphql/queries/__generated__/dummyAPI';
-import { useQuery } from '@apollo/react-hooks';
+// import { DummyAPI } from '../graphql/queries/__generated__/dummyAPI';
 
 const TicketToRide = () => {
   //const [travellers, setTravellers] = useState([]);
   const [selector, setSelector] = useState(1);
 
-  const { loading, error, data } = useQuery<DummyAPI>(dummyAPIQuery, {
-    client: defaultClient,
-    onCompleted: (data) => {
-      debugger;
-      console.log(data);
-    },
-  });
-
-  //const loadData = async () => {
-  //  console.log('Loading data');
-  //  try {
-  //    const res = await defaultClient.query<DummyAPI>({
-  //      query: dummyAPIQuery,
-  //      fetchPolicy: 'network-only',
-  //    });
-  //    console.log(res);
-  //  } catch (e) {
-  //    console.error(e);
-  //  }
-
-  //  // to query from db
-  //};
-
-  //useEffect(() => {
-  //  loadData();
-  //}, []);
-
-  //if (loading || !data) {
-  //  return <div>Loading...</div>;
-  //}
-  //if (error) {
-  //  return <div>Error! {error.message}</div>;
-  //}
-  const travellers = useMemo(() => {
-    if ((data?.listTravellers || []).length > 0) {
-      return data?.listTravellers?.map((traveller) => {
-        return (
-          <div>
-            <h1>{traveller?.name}</h1>
-            <h2>{traveller?.phone}</h2>
-          </div>
-        );
-      });
+  const loadData = async () => {
+    console.log('Loading data');
+    try {
+      // const res = await defaultClient.query<DummyAPI>({
+      //   query: dummyAPIQuery,
+      //   fetchPolicy: 'network-only',
+      // });
+      // console.log(res);
+    } catch (e) {
+      console.error(e);
     }
 
     return [];
-  }, [data]);
+  };
+
   return (
     <div>
       <h1>Ticket To Ride</h1>
       <div>
-        {travellers}
+        {/*{travellers}*/}
         <button onClick={setSelector.bind(null, 1)}>Homepage</button>
         <button onClick={setSelector.bind(null, 1)}>Display Travellers</button>
         <button onClick={setSelector.bind(null, 3)}>Add Traveller</button>

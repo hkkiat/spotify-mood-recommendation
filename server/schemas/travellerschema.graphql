@@ -18,7 +18,36 @@ input InputTicket {
 	bookingTime: GraphQLDate!
 }
 
+# TYPES FOR MOODLOG
+
+type MoodLog {
+  _id: ID!
+  email: String!
+  logdatetime: GraphQLDate!
+  overallfeeling: String!
+  happinesslevel: Int!
+  mostimpact: ImpactEnum!
+}
+
+enum ImpactEnum {
+  FAMILY
+  FRIENDS
+  WORK
+  LIFE
+  STUDY
+}
+
+input InputMoodLog {
+  email: String!
+  logdatetime: GraphQLDate!
+  overallfeeling: String!
+  happinesslevel: Int!
+  mostimpact: ImpactEnum!
+}
+
 type Query {
+	# Query to retrieve all moodlogs for person
+  	getAllMoodLogs(email: String!): [MoodLog]
 	listTravellers:[Ticket]!
 	findBlackListTraveller(
 		travellername: String,
@@ -26,6 +55,8 @@ type Query {
 }
 
 type Mutation {
+	# Mutation to create a day's moodlog for person
+	createMoodLog(moodlog: InputMoodLog!): MoodLog
 	addTraveller(ticket: InputTicket!): Ticket!
 	deleteTraveller(travellername: String!): Boolean!
 	blacklistTravellerName(travellername: String!): Boolean
