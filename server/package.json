@@ -2,7 +2,9 @@
   "dependencies": {
     "apollo-server-express": "^2.26.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.16.4",
-    "mongodb": "^3.7.3"
+    "mongodb": "^3.7.3",
+    "spotify-web-api-node": "^5.0.2"
   }
 }

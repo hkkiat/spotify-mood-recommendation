@@ -45,6 +45,31 @@ input InputMoodLog {
   mostimpact: ImpactEnum!
 }
 
+# Spotify
+type AuthData {
+  userId: String!
+  accessToken: String!
+  refreshToken: String!
+  expiresAt: GraphQLDate!
+}
+
+type Playlist {
+  id: ID!
+  name: String
+  tracks: [Track]
+}
+
+type Track {
+  id: ID!
+  name: String
+  artists: [Artist]
+}
+
+type Artist {
+  id: ID!
+  name: String
+}
+
 type Query {
 	# Query to retrieve all moodlogs for person
   	getAllMoodLogs(email: String!): [MoodLog]
@@ -61,5 +86,11 @@ type Mutation {
 	deleteTraveller(travellername: String!): Boolean!
 	blacklistTravellerName(travellername: String!): Boolean
 	blacklistTravellerPhone(travellerphone: Int!): Boolean
+	# Spotify mutations
+	authorize(code: String!): AuthData
+  	refreshAccessToken(userId: String!): AuthData
+	createPlaylistBasedOnFavorites(userId: ID!, valence: Float!, danceability: Float!, energy: Float!): Playlist
+
 }
+
 
