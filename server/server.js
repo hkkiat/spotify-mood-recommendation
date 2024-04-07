@@ -1,3 +1,5 @@
+require('dotenv').config({ path: './.env' });
+
 const fs = require('fs');
 const express = require('express');
 const { ApolloServer, UserInputError } = require('apollo-server-express');
@@ -5,6 +7,7 @@ const { backendPort } = require('./config');
 const { connectToDb } = require('./db');
 const resolvers = require('./resolvers/MainResolver');
 const cors = require('cors'); // Import the cors middleware
+const path = require('path');
 
 const app = express();
 app.use(express.static('public'));
@@ -45,3 +48,4 @@ app.use(cors());
     console.log('ERROR:', err);
   }
 })();
+
