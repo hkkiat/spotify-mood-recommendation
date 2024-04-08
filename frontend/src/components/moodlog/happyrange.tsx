@@ -12,15 +12,15 @@ interface HappyRangeProps {
 
 function HappyRange({ onHappyRangeChange }: HappyRangeProps) {
     // State to track the value of the range input
-    const [rangeValue, setRangeValue] = useState(3);
+    const [rangeValue, setRangeValue] = useState(0.5);
 
     // Mapping between numerical values and their corresponding text descriptions
     const valueTextMap: Record<number, string> = {
-        1: 'Very Unhappy',
-        2: 'Unhappy',
-        3: 'Neutral',
-        4: 'Happy',
-        5: 'Very Happy'
+        0: 'Very Unhappy',
+        0.25: 'Unhappy',
+        0.5: 'Neutral',
+        0.75: 'Happy',
+        1: 'Very Happy'
     };
 
     // Function to handle changes in the range input value
@@ -38,22 +38,23 @@ function HappyRange({ onHappyRangeChange }: HappyRangeProps) {
                 <input
                     type="range"
                     className="form-range"
-                    min="1"
-                    max="5"
-                    step="1"
+                    min="0"
+                    max="1"
+                    step="0.25"
                     id="happyRange"
                     value={rangeValue} // Bind the value of the input to the rangeValue state
                     onChange={handleRangeChange} // Call handleRangeChange function when the input value changes
                 />
                 <div className='rangeLabels' style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
+                    <span >{valueTextMap[0]}</span>
+                    <span >{valueTextMap[0.25]}</span>
+                    <span >{valueTextMap[0.5]}</span>
+                    <span >{valueTextMap[0.75]}</span>
                     <span >{valueTextMap[1]}</span>
-                    <span >{valueTextMap[2]}</span>
-                    <span >{valueTextMap[3]}</span>
-                    <span >{valueTextMap[4]}</span>
-                    <span >{valueTextMap[5]}</span>
                 </div>
             </div>
-            <p>Selected value: {valueTextMap[rangeValue]}</p> {/* Display the text corresponding to the selected value */}
+            <p>Selected feeling: {valueTextMap[rangeValue]}</p> {/* Display the text corresponding to the selected feeling */}
+            <p>Selected value: {rangeValue}</p> {/* Display the text corresponding to the selected value */}
         </div>
     );
 }

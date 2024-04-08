@@ -27,7 +27,7 @@ const useMoodLogs = (email: string) => {
 
 const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   const [overallFeeling, setOverallFeeling] = useState('');
-  const [happyRangeValue, setHappyRangeValue] = useState(0);
+  const [happyRangeValue, setHappyRangeValue] = useState(0.5);
 
   const { loading, error, data } = useMoodLogs(email);
 
