@@ -25,7 +25,7 @@ type MoodLog {
   email: String!
   logdatetime: GraphQLDate!
   overallfeeling: String!
-  happinesslevel: Int!
+  happinesslevel: Float!
   mostimpact: ImpactEnum!
 }
 
@@ -41,7 +41,7 @@ input InputMoodLog {
   email: String!
   logdatetime: GraphQLDate!
   overallfeeling: String!
-  happinesslevel: Int!
+  happinesslevel: Float!
   mostimpact: ImpactEnum!
 }
 

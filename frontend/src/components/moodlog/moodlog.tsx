@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, FormEvent, useState, useEffect } from 'react';
 import Layout from '../common/layout';
 import OverallFeeling from './overallfeeling';
 import HappyRange from './happyrange';
@@ -10,18 +10,26 @@ import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/_
 
 interface MoodLogProps {
   email: string;
-  currentPage: string; // Add currentPage prop
+  currentPage: string;
 }
 
-const MoodLog: React.FC<MoodLogProps> = ({ email, currentPage }) => {
-  console.log('This is the email', email)
-  // Fetch mood logs data
+// Custom hook to fetch mood logs
+const useMoodLogs = (email: string) => {
   const { loading, error, data } = useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
     getAllMoodLogsQuery,
     {
       variables: { email: email },
     }
   );
+
+  return { loading, error, data };
+};
+
+const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
+  const [overallFeeling, setOverallFeeling] = useState('');
+  const [happyRangeValue, setHappyRangeValue] = useState(0.5);
+
+  const { loading, error, data } = useMoodLogs(email);
 
   // Handle loading state
   if (loading) return <p>Loading...</p>;
@@ -30,15 +38,35 @@ const MoodLog: React.FC<MoodLogProps> = ({ email, currentPage }) => {
   if (error) return <p>Error: {error.message}</p>;
 
   // Log data received from GraphQL query
-  console.log('Mood log data:', data);
+  console.log('Mood log data: ', data);
+
+  // Handle text change
+  const handleOverallFeelingChange = (text: string) => {
+    setOverallFeeling(text);
+  };
+
+  // handle range change
+  const handleHappyRangeChange = (value: number) => {
+    setHappyRangeValue(value); // Update the happy range value in the state
+  };
+
+  // handle submit
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    // Perform actions with the submitted data, such as executing the GraphQL query
+    console.log('Overall feeling submitted:', overallFeeling);
+    console.log("Happy range submitted:", happyRangeValue)
+  };
 
   return (
-    <Layout currentPage={currentPage}> {/* Pass currentPage to Layout */}
-      {/* Render components */}
+    <Layout currentPage={currentPage}>
       <Calendar />
-      <OverallFeeling />
-      <HappyRange />
-      <MostImpact />
+      <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />
+      <HappyRange onHappyRangeChange={handleHappyRangeChange} />
+      <MostImpact/>
+      <div className="d-flex justify-content-center mt-3">
+        <button className="btn btn-primary mb-2" onClick={handleSubmit}>Log my mood in!</button>
+      </div>
     </Layout>
   );
 }
