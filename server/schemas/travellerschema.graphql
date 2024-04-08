@@ -53,22 +53,27 @@ type AuthData {
   expiresAt: GraphQLDate!
 }
 
-type Playlist {
-  id: ID!
-  name: String
-  tracks: [Track]
+type Artist {
+  id: String!
+  name: String!
+  topTracks: [Track!]!
 }
 
 type Track {
-  id: ID!
-  name: String
-  artists: [Artist]
+  id: String!
+  name: String!
+  artists: [Artist!]!
+  valence: Float
+  danceability: Float
+  energy: Float
 }
 
-type Artist {
-  id: ID!
-  name: String
+type Playlist {
+  id: String!
+  name: String!
+  tracks: [Track!]!
 }
+
 
 type Query {
 	# Query to retrieve all moodlogs for person
@@ -77,6 +82,7 @@ type Query {
 	findBlackListTraveller(
 		travellername: String,
 		travellerphone: Int): Boolean!
+	getUserFavorites(userId: String!): [Artist]
 }
 
 type Mutation {
@@ -89,8 +95,7 @@ type Mutation {
 	# Spotify mutations
 	authorize(code: String!): AuthData
   	refreshAccessToken(userId: String!): AuthData
-	createPlaylistBasedOnFavorites(userId: ID!, valence: Float!, danceability: Float!, energy: Float!): Playlist
-
+  	createPlaylistBasedOnFavorites(userId: String!, moodvalue: Float!): Playlist!
 }
 
 
