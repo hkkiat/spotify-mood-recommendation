@@ -26,15 +26,7 @@ type MoodLog {
   logdatetime: GraphQLDate!
   overallfeeling: String!
   happinesslevel: Float!
-  mostimpact: ImpactEnum!
-}
-
-enum ImpactEnum {
-  FAMILY
-  FRIENDS
-  WORK
-  LIFE
-  STUDY
+  mostimpact: String!
 }
 
 input InputMoodLog {
@@ -42,7 +34,7 @@ input InputMoodLog {
   logdatetime: GraphQLDate!
   overallfeeling: String!
   happinesslevel: Float!
-  mostimpact: ImpactEnum!
+  mostimpact: String!
 }
 
 # Spotify

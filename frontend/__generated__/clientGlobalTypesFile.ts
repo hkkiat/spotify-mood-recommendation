@@ -7,20 +7,12 @@
 // START Enums and Input Objects
 //==============================================================
 
-export enum ImpactEnum {
-  FAMILY = "FAMILY",
-  FRIENDS = "FRIENDS",
-  LIFE = "LIFE",
-  STUDY = "STUDY",
-  WORK = "WORK",
-}
-
 export interface InputMoodLog {
   email: string;
   logdatetime: any;
   overallfeeling: string;
   happinesslevel: number;
-  mostimpact: ImpactEnum;
+  mostimpact: string;
 }
 
 //==============================================================

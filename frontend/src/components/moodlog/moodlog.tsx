@@ -1,12 +1,15 @@
-import React, { FC, FormEvent, useState, useEffect } from 'react';
+import { FC, FormEvent, useState } from 'react';
 import Layout from '../common/layout';
 import OverallFeeling from './overallfeeling';
 import HappyRange from './happyrange';
 import MostImpact from './mostimpact';
 import Calendar from './calendar';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { getAllMoodLogsQuery } from '../../graphql/queries/MoodLogQueries';
 import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/__generated__/getAllMoodLogs';
+import { createMoodLog, createMoodLogVariables } from '../../graphql/mutations/__generated__/createMoodLog';
+import { createMoodLogMutation } from '../../graphql/mutations/MoodLogMutations';
+import { InputMoodLog } from 'generated-global-types/clientGlobalTypesFile';
 
 interface MoodLogProps {
   email: string;
@@ -14,7 +17,7 @@ interface MoodLogProps {
 }
 
 // Custom hook to fetch mood logs
-const useMoodLogs = (email: string) => {
+const useGetAllMoodLogs = (email: string) => {
   const { loading, error, data } = useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
     getAllMoodLogsQuery,
     {
@@ -25,12 +28,23 @@ const useMoodLogs = (email: string) => {
   return { loading, error, data };
 };
 
+const useCreateMoodLog = (moodlog: InputMoodLog) => {
+  const [createMoodLogMutationFn, { loading, error, data }] = useMutation<createMoodLog, createMoodLogVariables>(
+    createMoodLogMutation,
+    {
+      variables: { moodlog: moodlog },
+    }
+  );
+
+  return { createMoodLogMutationFn, loading, error, data };
+};
+
 const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   const [overallFeeling, setOverallFeeling] = useState('');
   const [happyRangeValue, setHappyRangeValue] = useState(0.5);
   const [mostImpact, setMostImpact] = useState('');
 
-  const { loading, error, data } = useMoodLogs(email);
+  const { loading, error, data } = useGetAllMoodLogs(email);
 
   // Handle loading state
   if (loading) return <p>Loading...</p>;
@@ -63,6 +77,15 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     console.log('Overall feeling submitted:', overallFeeling);
     console.log("Happy range submitted:", happyRangeValue);
     console.log("Most impact value submitted:", mostImpact);
+    // convert the string to impact enum 
+    const moodLogInput = {
+      email: email,
+      logdatetime: new Date(),
+      overallfeeling: overallFeeling,
+      happinesslevel: happyRangeValue,
+      mostimpact: mostImpact,
+    }
+    console.log("This is the mood log input", moodLogInput)
   };
 
   return (

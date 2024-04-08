@@ -6,11 +6,12 @@
 import { InputMoodLog } from "./../../../../__generated__/clientGlobalTypesFile";
 
 // ====================================================
-// GraphQL mutation operation: createMoodLog
+// GraphQL mutation operation: updateMoodLog
 // ====================================================
 
-export interface createMoodLog_createMoodLog {
+export interface updateMoodLog_updateMoodLog {
   __typename: "MoodLog";
+  _id: string;
   email: string;
   logdatetime: any;
   overallfeeling: string;
@@ -18,13 +19,10 @@ export interface createMoodLog_createMoodLog {
   mostimpact: string;
 }
 
-export interface createMoodLog {
-  /**
-   * Mutation to create a day's moodlog for person
-   */
-  createMoodLog: createMoodLog_createMoodLog | null;
+export interface updateMoodLog {
+  updateMoodLog: updateMoodLog_updateMoodLog | null;
 }
 
-export interface createMoodLogVariables {
+export interface updateMoodLogVariables {
   moodlog: InputMoodLog;
 }
