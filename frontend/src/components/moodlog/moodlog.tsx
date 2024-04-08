@@ -1,4 +1,4 @@
-import { FC, FormEvent, useState } from 'react';
+import { FC, FormEvent, useEffect, useState } from 'react';
 import Layout from '../common/layout';
 import OverallFeeling from './overallfeeling';
 import HappyRange from './happyrange';
@@ -9,51 +9,49 @@ import { getAllMoodLogsQuery } from '../../graphql/queries/MoodLogQueries';
 import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/__generated__/getAllMoodLogs';
 import { createMoodLog, createMoodLogVariables } from '../../graphql/mutations/__generated__/createMoodLog';
 import { createMoodLogMutation } from '../../graphql/mutations/MoodLogMutations';
-import { InputMoodLog } from 'generated-global-types/clientGlobalTypesFile';
 
 interface MoodLogProps {
   email: string;
   currentPage: string;
 }
 
-// Custom hook to fetch mood logs
-const useGetAllMoodLogs = (email: string) => {
-  const { loading, error, data } = useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
-    getAllMoodLogsQuery,
-    {
-      variables: { email: email },
-    }
-  );
-
-  return { loading, error, data };
-};
-
-const useCreateMoodLog = (moodlog: InputMoodLog) => {
-  const [createMoodLogMutationFn, { loading, error, data }] = useMutation<createMoodLog, createMoodLogVariables>(
-    createMoodLogMutation,
-    {
-      variables: { moodlog: moodlog },
-    }
-  );
-
-  return { createMoodLogMutationFn, loading, error, data };
-};
-
 const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
+  const [moodlogs, setMoodLogs] = useState<any[]>([]);
   const [overallFeeling, setOverallFeeling] = useState('');
   const [happyRangeValue, setHappyRangeValue] = useState(0.5);
   const [mostImpact, setMostImpact] = useState('');
 
-  const { loading, error, data } = useGetAllMoodLogs(email);
+  const { loading: moodLogsLoading, error: moodLogsError, data: moodLogsData } =
+    useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
+      getAllMoodLogsQuery,
+      {
+        variables: { email: email },
+      }
+    );
 
-  // Handle loading state
-  if (loading) return <p>Loading...</p>;
+  const [createMoodLogMutationFn, { loading: mutationLoading, error: mutationError, data: mutationData }] =
+    useMutation<createMoodLog, createMoodLogVariables>(
+      createMoodLogMutation,
+      {
+        variables: {
+          moodlog: {
+            email: email,
+            logdatetime: new Date(),
+            overallfeeling: overallFeeling,
+            happinesslevel: happyRangeValue,
+            mostimpact: mostImpact,
+          }
+        },
+      }
+    );
 
-  // Handle error state
-  if (error) return <p>Error: {error.message}</p>;
-
-  // Log data received from GraphQL query
-  console.log('Mood log data: ', data);
+  // Load log data received from GraphQL query
+  useEffect(() => {
+    if (moodLogsData) {
+      setMoodLogs(prevMoodLogs => [...prevMoodLogs, moodLogsData]);
+      console.log('Mood log data: ', moodLogsData);
+    }
+  }, [moodLogsData]);
 
   // Handle text change
   const handleOverallFeelingChange = (text: string) => {
@@ -71,13 +69,9 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   };
 
   // handle submit
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    // Perform actions with the submitted data, such as executing the GraphQL query
-    console.log('Overall feeling submitted:', overallFeeling);
-    console.log("Happy range submitted:", happyRangeValue);
-    console.log("Most impact value submitted:", mostImpact);
-    // convert the string to impact enum 
+
     const moodLogInput = {
       email: email,
       logdatetime: new Date(),
@@ -85,12 +79,28 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
       happinesslevel: happyRangeValue,
       mostimpact: mostImpact,
     }
-    console.log("This is the mood log input", moodLogInput)
+    console.log("Passing mood log input to backend: ", moodLogInput)
+
+    try {
+      // Before invoking the mutation function
+      console.log("Creating moodlog mutation function is about to be invoked");
+
+      // Invoke the mutation function
+      const { data } = await createMoodLogMutationFn();
+
+      // After the mutation function is invoked successfully with response
+      if (data && data.createMoodLog) {
+        setMoodLogs(prevMoodLogs => [...prevMoodLogs, data.createMoodLog]);
+        console.log('Mood log data updated: ', data.createMoodLog);
+      }
+    } catch (error) {
+      console.error("Error occurred while invoking creating moodlog mutation function:", error);
+    }
   };
 
   return (
     <Layout currentPage={currentPage}>
-      <Calendar />
+      <Calendar moodlogs={moodlogs} />
       <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />
       <HappyRange onHappyRangeChange={handleHappyRangeChange} />
       <MostImpact onMostImpactChange={handleMostImpactChange} />

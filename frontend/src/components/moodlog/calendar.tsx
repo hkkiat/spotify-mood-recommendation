@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, ChangeEvent } from 'react';
+import { useEffect, useRef, useState, ChangeEvent, FC } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/en-sg';
 import Badge from '@mui/material/Badge';
@@ -22,6 +22,10 @@ type Mood = 'happy' | 'sad' | 'neutral';
 
 interface DayData {
     mood: Mood;
+}
+
+interface CalendarProps {
+    moodlogs: any[]; // Assuming moodlogs is an array of mood log data
 }
 
 function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
@@ -128,12 +132,16 @@ function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[];
 }
 
 
-export default function DateCalendarServerRequest() {
+const Calendar: FC<CalendarProps> = ({ moodlogs }) => {
     const requestAbortController = useRef<AbortController | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
     const [moodData, setMoodData] = useState<DayData[]>([]);
 
+    if (moodlogs.length !== 0) {
+        const moodlogsArray = moodlogs[0].getAllMoodLogs
+        console.log("This is inside Calendar", moodlogsArray)
+    }
     const fetchHighlightedDays = (date: Dayjs) => {
         const controller = new AbortController();
         fakeFetch(date, {
@@ -195,3 +203,5 @@ export default function DateCalendarServerRequest() {
         </LocalizationProvider>
     );
 }
+
+export default Calendar;
