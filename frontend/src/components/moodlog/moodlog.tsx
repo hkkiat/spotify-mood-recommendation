@@ -28,6 +28,7 @@ const useMoodLogs = (email: string) => {
 const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   const [overallFeeling, setOverallFeeling] = useState('');
   const [happyRangeValue, setHappyRangeValue] = useState(0.5);
+  const [mostImpact, setMostImpact] = useState('');
 
   const { loading, error, data } = useMoodLogs(email);
 
@@ -50,12 +51,18 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     setHappyRangeValue(value); // Update the happy range value in the state
   };
 
+  // handle most impact change
+  const handleMostImpactChange = (text: string) => {
+    setMostImpact(text); // Update the happy range value in the state
+  };
+
   // handle submit
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     // Perform actions with the submitted data, such as executing the GraphQL query
     console.log('Overall feeling submitted:', overallFeeling);
-    console.log("Happy range submitted:", happyRangeValue)
+    console.log("Happy range submitted:", happyRangeValue);
+    console.log("Most impact value submitted:", mostImpact);
   };
 
   return (
@@ -63,7 +70,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
       <Calendar />
       <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />
       <HappyRange onHappyRangeChange={handleHappyRangeChange} />
-      <MostImpact/>
+      <MostImpact onMostImpactChange={handleMostImpactChange} />
       <div className="d-flex justify-content-center mt-3">
         <button className="btn btn-primary mb-2" onClick={handleSubmit}>Log my mood in!</button>
       </div>

@@ -77,7 +77,8 @@ type Playlist {
 
 type Query {
 	# Query to retrieve all moodlogs for person
-  	getAllMoodLogs(email: String!): [MoodLog]
+  getAllMoodLogs(email: String!): [MoodLog]
+  getExistingMoodLog(email: String!, date: GraphQLDate!): MoodLog
 	listTravellers:[Ticket]!
 	findBlackListTraveller(
 		travellername: String,
@@ -88,6 +89,7 @@ type Query {
 type Mutation {
 	# Mutation to create a day's moodlog for person
 	createMoodLog(moodlog: InputMoodLog!): MoodLog
+  updateMoodLog(moodlog: InputMoodLog!): MoodLog
 	addTraveller(ticket: InputTicket!): Ticket!
 	deleteTraveller(travellername: String!): Boolean!
 	blacklistTravellerName(travellername: String!): Boolean
