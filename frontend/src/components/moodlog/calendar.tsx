@@ -24,6 +24,16 @@ interface DayData {
     mood: Mood;
 }
 
+interface DailyMoodLog {
+    __typename: string;
+    _id: string;
+    email: string;
+    logdatetime: string; // Assuming this is a string representation of a date
+    overallfeeling: string;
+    happinesslevel: number;
+    mostimpact: string;
+}
+
 interface CalendarProps {
     moodlogs: any[]; // Assuming moodlogs is an array of mood log data
 }
@@ -137,11 +147,24 @@ const Calendar: FC<CalendarProps> = ({ moodlogs }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
     const [moodData, setMoodData] = useState<DayData[]>([]);
+    const [moodlogsData, setMoodlogsData] = useState<DailyMoodLog[]>([]);
 
-    if (moodlogs.length !== 0) {
-        const moodlogsArray = moodlogs[0].getAllMoodLogs
-        console.log("This is inside Calendar", moodlogsArray)
+    useEffect(() => {
+        if (moodlogs.length !== 0) {
+            const moodlogsArray = moodlogs[0].getAllMoodLogs;
+            console.log("This is moodlogs prop:", moodlogsArray);
+            setMoodlogsData(moodlogsArray);
+        }
+    }, [moodlogs]);
+
+    useEffect(() => {
+        console.log("This is moodlogs state:", moodlogsData);
+    }, [moodlogsData]);
+
+    const displayIndividualMoodLog = (moodlogsData: any[]) => {
+        moodlogsData.forEach(element => console.log(element))
     }
+    
     const fetchHighlightedDays = (date: Dayjs) => {
         const controller = new AbortController();
         fakeFetch(date, {
