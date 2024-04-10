@@ -12,11 +12,8 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { BiHome } from 'react-icons/bi'; // Import icons
 
-function getRandomNumber(min: number, max: number) {
-    return Math.round(Math.random() * (max - min) + min);
-}
 
-const initialValue = dayjs(); // current date
+const CURRENT_DATE = dayjs(); // current date
 
 type Mood = 'happy' | 'sad' | 'neutral';
 
@@ -38,16 +35,45 @@ interface CalendarProps {
     moodlogs: any[]; // Assuming moodlogs is an array of mood log data
 }
 
-function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
-    return new Promise<{ daysToHighlight: number[]; moodData: DayData[] }>((resolve, reject) => {
+function generateMonthArray(date: Dayjs, moodlogsDataCalendar: DailyMoodLog[], { signal }: { signal: AbortSignal }) {
+    return new Promise<{ daysToHighlight: number[]; outputMoodlogsData: DailyMoodLog[] }>((resolve, reject) => {
+        console.log('Incorporating...', moodlogsDataCalendar)
         const timeout = setTimeout(() => {
             const daysInMonth = date.daysInMonth();
-            const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
-            const moodData: DayData[] = Array.from({ length: daysInMonth }, () => ({
-                mood: ['happy', 'sad', 'neutral'][getRandomNumber(0, 2)] as Mood // Cast the mood as Mood
-            }));
+            const targetMonth = date.month()
+            const targetYear = date.year()
+            const daysToHighlight: number[] = []; // not used - KIV in case we want to highlight certain days
+            const outputMoodlogsData: DailyMoodLog[] = [];
 
-            resolve({ daysToHighlight, moodData });
+            console.log('targetmonth', targetMonth)
+            for (let i = 1; i <= daysInMonth; i++) {
+                const matchingItem = moodlogsDataCalendar.find(
+                    (item) =>
+                        new Date(item.logdatetime).getDate() === i &&
+                        new Date(item.logdatetime).getMonth() === targetMonth &&
+                        new Date(item.logdatetime).getFullYear() === targetYear
+                );
+
+                if (matchingItem) {
+                    // If data exists, add it to the outputMoodlogsData array
+                    console.log('It matches!')
+                    outputMoodlogsData.push(matchingItem);
+                } else {
+                    // If no existing data, generate random mood data for this day
+                    outputMoodlogsData.push({
+                        __typename: 'MoodLog',
+                        _id: "generated", // Assuming a function to generate ObjectId
+                        email: 'example@example.com',
+                        logdatetime: date.set('date', i).toISOString(), // Set the date and convert to ISOString
+                        overallfeeling: '', // Randomly select overall feeling
+                        happinesslevel: -1, // Random happiness level
+                        mostimpact: '' // Assuming a default value for mostimpact
+                    });
+                }
+            }
+            console.log('outputMoodlogsData: ', outputMoodlogsData)
+            console.log('daysToHighlight: ', daysToHighlight)
+            resolve({ daysToHighlight, outputMoodlogsData });
         }, 500);
 
         signal.onabort = () => {
@@ -57,16 +83,36 @@ function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
     });
 }
 
-function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[]; moodData: DayData[]; updateMoodData: (updatedMoodData: DayData[]) => void }) {
-    const { highlightedDays = [], moodData, day, outsideCurrentMonth, updateMoodData, ...other } = props;
+function DayComponent(props: PickersDayProps<Dayjs> & {
+    highlightedDays?: number[];
+    moodData: DayData[];
+    updateMoodData: (updatedMoodData: DayData[]) => void;
+    moodlogsDataCalendar: DailyMoodLog[];
+    updateMoodlogsData: (updateMoodlogsData: DailyMoodLog[]) => void;
+}) {
+    const { highlightedDays = [], moodData, day, outsideCurrentMonth, updateMoodData, moodlogsDataCalendar, updateMoodlogsData, ...other } = props;
 
     const [open, setOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
 
-    const isCurrentDate = dayjs().isSame(day, 'day'); // Check if the day is the current date
+    const isCurrentDate = dayjs().isSame(day, 'day'); // Check if the day is the current date to determine if icon should be displayed
 
-    const mood = moodData[props.day.date() - 1]?.mood || selectedMood; // Adjust index to match day
+    // console.log('This is inside DayComponent, moodData:', moodData)
+    console.log('This is inside DayComponent, moodlogsDataCalendar:', moodlogsDataCalendar)
+
+    const happinessLevel = moodlogsDataCalendar[props.day.date() - 1]?.happinesslevel || 0; // Adjust index to match day
+    const colorMap: Record<string, string> = {
+        '1': 'lightgreen',
+        '0.75': 'lightyellow',
+        '0.5': 'lightpink',
+        '0.25': 'lightorange',
+        '0': 'red',
+        '-1': 'grey',
+    };
+    const backgroundColor = colorMap[happinessLevel] || 'lightpink';
+    // console.log('This is inside DayComponent, mood:', mood)
+    // console.log('This is inside DayComponent, day:', day)
 
     const handleClick = () => {
         setOpen(true);
@@ -105,7 +151,7 @@ function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[];
                         {...other}
                         outsideCurrentMonth={outsideCurrentMonth}
                         day={day}
-                        sx={{ backgroundColor: mood === 'happy' ? 'lightgreen' : mood === 'sad' ? 'lightpink' : 'lightgray' }}
+                        sx={{ backgroundColor }}
                         onClick={handleClick} // Keep onClick for current dates
                     />
                 </Badge>
@@ -115,7 +161,7 @@ function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[];
                     {...other}
                     outsideCurrentMonth={outsideCurrentMonth}
                     day={day}
-                    sx={{ backgroundColor: mood === 'happy' ? 'lightgreen' : mood === 'sad' ? 'lightpink' : 'lightgray' }}
+                    sx={{ backgroundColor }}
                     onClick={handleClick} // Keep onClick for non-current dates
                 />
             )}
@@ -147,51 +193,83 @@ const Calendar: FC<CalendarProps> = ({ moodlogs }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
     const [moodData, setMoodData] = useState<DayData[]>([]);
-    const [moodlogsData, setMoodlogsData] = useState<DailyMoodLog[]>([]);
+    const [moodlogsData, setMoodlogsData] = useState<DailyMoodLog[]>(moodlogs[0]?.getAllMoodLogs || []); // this depends on prop data
+    const [moodlogsDataCalendar, setMoodlogsDataCalendar] = useState<DailyMoodLog[]>([]); // this depends on month selected
+    const [dataReady, setDataReady] = useState(false);
 
+    // Initialize prop data into moodlogsData & moodlogsDataCalendar
     useEffect(() => {
         if (moodlogs.length !== 0) {
-            const moodlogsArray = moodlogs[0].getAllMoodLogs;
-            console.log("This is moodlogs prop:", moodlogsArray);
-            setMoodlogsData(moodlogsArray);
+            console.log("Initializing moodlogsData state with:", moodlogs[0].getAllMoodLogs);
+            setMoodlogsData(moodlogs[0].getAllMoodLogs);
+            setMoodlogsDataCalendar(moodlogs[0].getAllMoodLogs);
         }
     }, [moodlogs]);
 
+    // Initialize current month's array based on today's date & moodlogsDataCalendar 
     useEffect(() => {
-        console.log("This is moodlogs state:", moodlogsData);
+        if (moodlogsDataCalendar.length > 0) {
+            console.log("This is CURRENT_DATE before generating:", CURRENT_DATE);
+            console.log("This is moodlogsDataCalendar state before generating:", moodlogsDataCalendar);
+            prepareCalendarArray(CURRENT_DATE, moodlogsDataCalendar);
+        }
+    }, []);
+
+    /*
+    LOGGING STATEMENTS
+    */
+    useEffect(() => {
+        if (moodlogsData.length > 0) {
+            console.log("moodlogsData updated:", moodlogsData); // Log moodlogsData after it's updated
+        }
     }, [moodlogsData]);
 
-    const displayIndividualMoodLog = (moodlogsData: any[]) => {
-        moodlogsData.forEach(element => console.log(element))
-    }
-    
-    const fetchHighlightedDays = (date: Dayjs) => {
-        const controller = new AbortController();
-        fakeFetch(date, {
-            signal: controller.signal,
-        })
-            .then(({ daysToHighlight, moodData }) => {
-                setHighlightedDays(daysToHighlight);
-                setMoodData(moodData);
-                setIsLoading(false);
-            })
-            .catch((error) => {
-                // ignore the error if it's caused by `controller.abort`
-                if (error.name !== 'AbortError') {
-                    throw error;
-                }
-            });
+    useEffect(() => {
+        if (moodlogsDataCalendar.length > 0) {
+            console.log("moodlogsDataCalendar updated:", moodlogsDataCalendar); // Log moodlogsDataCalendar after it's updated
+        }
+    }, [moodlogsDataCalendar]);
 
-        requestAbortController.current = controller;
+    /*
+    HELPER FUNCTIONS
+    */
+
+    const handleDataReady = () => {
+        setDataReady(true);
+    };
+
+    const prepareCalendarArray = (date: Dayjs, moodlogsDataCalendar: DailyMoodLog[]) => {
+        console.log('Generating calendar array...', moodlogsDataCalendar)
+        const controller = new AbortController();
+        if (moodlogsDataCalendar.length !== 0) {
+            generateMonthArray(date, moodlogsDataCalendar, {
+                signal: controller.signal,
+            })
+                .then(({ daysToHighlight, outputMoodlogsData }) => {
+                    setHighlightedDays(daysToHighlight); // not used - kiv if want to use
+                    setMoodlogsDataCalendar(outputMoodlogsData);
+                    setIsLoading(false);
+                    handleDataReady();
+                })
+                .catch((error) => {
+                    // ignore the error if it's caused by `controller.abort`
+                    if (error.name !== 'AbortError') {
+                        throw error;
+                    }
+                });
+
+            requestAbortController.current = controller;
+        }
+
     };
 
     useEffect(() => {
-        fetchHighlightedDays(initialValue);
+        prepareCalendarArray(CURRENT_DATE, moodlogsData);
         // abort request on unmount
         return () => requestAbortController.current?.abort();
     }, []);
 
-    const handleMonthChange = (date: Dayjs) => {
+    const handleMonthChange2 = (date: Dayjs) => {
         if (requestAbortController.current) {
             // make sure that you are aborting useless requests
             // because it is possible to switch between months pretty quickly
@@ -200,22 +278,26 @@ const Calendar: FC<CalendarProps> = ({ moodlogs }) => {
 
         setIsLoading(true);
         setHighlightedDays([]);
-        fetchHighlightedDays(date);
+        setMoodlogsDataCalendar(moodlogs[0].getAllMoodLogs); // reload all moodlogs
+        prepareCalendarArray(date, moodlogsData);
     };
 
     const updateMoodData = (updatedMoodData: DayData[]) => {
         setMoodData(updatedMoodData);
     };
 
+    const updateMoodlogsData = (updatedMoodlogsData: DailyMoodLog[]) => {
+        setMoodlogsData(updatedMoodlogsData);
+    };
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-sg">
             <DateCalendar
-                defaultValue={initialValue}
+                defaultValue={CURRENT_DATE}
                 loading={isLoading}
-                onMonthChange={handleMonthChange}
+                onMonthChange={handleMonthChange2}
                 renderLoading={() => <DayCalendarSkeleton />}
                 slots={{
-                    day: (props) => <ServerDay {...props} moodData={moodData} updateMoodData={updateMoodData} />,
+                    day: (props) => dataReady ? <DayComponent {...props} moodData={moodData} updateMoodData={updateMoodData} moodlogsDataCalendar={moodlogsDataCalendar} updateMoodlogsData={updateMoodlogsData} /> : null,
                 }}
                 slotProps={{
                     day: {
