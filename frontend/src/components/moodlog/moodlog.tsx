@@ -15,6 +15,14 @@ interface MoodLogProps {
   currentPage: string;
 }
 
+interface DailyMoodLogInputFromCalendar {
+  email: string;
+  logdatetime: string; // Assuming this is a string representation of a date
+  // overallfeeling: string;
+  happinesslevel: number;
+  // mostimpact: string;
+}
+
 const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   const [moodlogs, setMoodLogs] = useState<any[]>([]);
   const [overallFeeling, setOverallFeeling] = useState('');
@@ -49,9 +57,22 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   useEffect(() => {
     if (moodLogsData) {
       setMoodLogs(prevMoodLogs => [...prevMoodLogs, moodLogsData]);
-      console.log('Mood log data: ', moodLogsData);
+      console.log('Mood log data from GQL query: ', moodLogsData);
     }
   }, [moodLogsData]);
+
+  // Handle calendar mood log change
+  const updateMoodLog = (updatedMoodLog: DailyMoodLogInputFromCalendar) => {
+    const moodLogInput = {
+      email: email,
+      logdatetime: updatedMoodLog.logdatetime,
+      overallFeeling: '',
+      happinesslevel: updatedMoodLog.happinesslevel,
+      mostimpact: '',
+    }
+    // TO DO - use gql update function
+    console.log("moodLogInput passed from calendar component:", moodLogInput);
+  };
 
   // Handle text change
   const handleOverallFeelingChange = (text: string) => {
@@ -100,7 +121,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
 
   return (
     <Layout currentPage={currentPage}>
-      <Calendar moodlogs={moodlogs} />
+      <Calendar email={email} moodlogs={moodlogs} updateMoodLog={updateMoodLog} />
       <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />
       <HappyRange onHappyRangeChange={handleHappyRangeChange} />
       <MostImpact onMostImpactChange={handleMostImpactChange} />

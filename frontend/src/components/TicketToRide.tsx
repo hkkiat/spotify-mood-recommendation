@@ -37,7 +37,7 @@ const TicketToRide = () => {
         <button onClick={setSelector.bind(null, 4)}>Delete Traveller</button>
         <button onClick={setSelector.bind(null, 5)}>Blacklist Traveller</button>
       </div>
-      {selector === 1 ? <Homepage /> : <hr />}
+      {/* {selector === 1 ? <Homepage /> : <hr />} */}
       {/*{this.state.selector === 2 ? <Display travellers={this.state.travellers} /> : <hr />}
       {this.state.selector === 3 ? <Add bookTraveller={this.bookTraveller} /> : <hr />}
       {this.state.selector === 4 ? <Delete deleteTraveller={this.deleteTraveller} /> : <hr />}
