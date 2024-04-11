@@ -1,6 +1,6 @@
 import { gql } from 'apollo-boost';
 
-export const createMoodLog = gql`
+export const createMoodLogMutation = gql`
 mutation createMoodLog($moodlog: InputMoodLog!) {
     createMoodLog(moodlog: $moodlog) {
       email
@@ -11,3 +11,16 @@ mutation createMoodLog($moodlog: InputMoodLog!) {
     }
   }
 `;
+
+export const updateMoodLogMutation = gql`
+mutation updateMoodLog($moodlog: InputMoodLog!) {
+  updateMoodLog(moodlog: $moodlog) {
+    _id
+    email
+    logdatetime
+    overallfeeling
+    happinesslevel
+    mostimpact
+  }
+}
+`

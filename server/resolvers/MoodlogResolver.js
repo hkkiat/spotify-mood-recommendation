@@ -55,7 +55,12 @@ async function getExistingMoodLog(_, { email, date }, { db }) {
     const collection = db.collection('moodlog');
 
     const startDate = new Date(date);
+    startDate.setUTCHours(0, 0, 0, 0); // Set start time to 00:00:00 UTC
     const endDate = new Date(startDate.getTime() + (24 * 60 * 60 * 1000));
+    endDate.setUTCHours(0, 0, 0, 0); // Set end time to 00:00:00 UTC of the next day
+
+    console.log(`Start range: ${startDate}`)
+    console.log(`End range: ${endDate}`)
 
     // Insert the moodlog into the database
     const result = await collection.findOne({

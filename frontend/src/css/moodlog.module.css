@@ -16,9 +16,10 @@ STYLING FOR CHECKBOX COMPONENT
 
 .checkboxGroup {
     display: flex;
+    margin: auto;
 }
 
 /* Optional: Add margin to separate checkboxes */
 .checkboxGroup > * {
-    margin-right: 10px; /* Adjust as needed */
+    margin-right: 50px; /* Adjust as needed */
 }
