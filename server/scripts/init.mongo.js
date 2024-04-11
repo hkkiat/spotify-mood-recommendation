@@ -70,6 +70,24 @@ const moodlogs = [
     overallfeeling: "tired",
     happinesslevel: 0.25,
     mostimpact: "FRIENDS"
+  },{
+    email: "example@example.com",
+    logdatetime: ISODate("2024-05-19T15:35:31.585Z"),
+    overallfeeling: "cant wait to meet friends",
+    happinesslevel: 0.25,
+    mostimpact: "WORK"
+  },{
+    email: "example2@example.com",
+    logdatetime: ISODate("2024-05-02T15:35:31.585Z"),
+    overallfeeling: "tired",
+    happinesslevel: 0.5,
+    mostimpact: "FRIENDS"
+  },{
+    email: "example@example.com",
+    logdatetime: ISODate("2024-05-21T15:35:31.585Z"),
+    overallfeeling: "really tired",
+    happinesslevel: 0.25,
+    mostimpact: "FAMILY"
   },
 ];
 
