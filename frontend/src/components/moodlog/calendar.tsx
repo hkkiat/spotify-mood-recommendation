@@ -11,6 +11,8 @@ import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { BiHome } from 'react-icons/bi'; // Import icons
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 
 const CURRENT_DATE = dayjs(); // current date
@@ -179,7 +181,19 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
                 />
             )}
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>{`Enter data for ${day.format('DD/MM/YYYY')}`}</DialogTitle>
+                <DialogTitle>{`Edit data for ${day.format('DD/MM/YYYY')}`}</DialogTitle>
+                <IconButton
+                    aria-label="close"
+                    onClick={handleClose}
+                    sx={{
+                        position: 'absolute',
+                        right: 8,
+                        top: 8,
+                        color: (theme) => theme.palette.grey[500],
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
                 <TextField
                     autoFocus
                     margin="dense"
