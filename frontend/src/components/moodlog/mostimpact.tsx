@@ -23,6 +23,7 @@ const MostImpact: React.FC<MostImpactProps> = ({ onMostImpactChange }) => {
                 <Checkbox id="option3Checkbox" label="Work" value="Work" checked={mostImpact === 'Work'} onChange={(checked, value) => handleMostImpactChange(checked ? value : '')} onMostImpactChange={handleMostImpactChange} />
                 <Checkbox id="option4Checkbox" label="Life" value="Life" checked={mostImpact === 'Life'} onChange={(checked, value) => handleMostImpactChange(checked ? value : '')} onMostImpactChange={handleMostImpactChange} />
                 <Checkbox id="option5Checkbox" label="Study" value="Study" checked={mostImpact === 'Study'} onChange={(checked, value) => handleMostImpactChange(checked ? value : '')} onMostImpactChange={handleMostImpactChange} />
+                <Checkbox id="option5Checkbox" label="Others" value="Others" checked={mostImpact === 'Others'} onChange={(checked, value) => handleMostImpactChange(checked ? value : '')} onMostImpactChange={handleMostImpactChange} />
             </div>
         </div>
     );

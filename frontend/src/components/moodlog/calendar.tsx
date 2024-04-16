@@ -43,7 +43,7 @@ interface CalendarProps {
 
 function generateMonthArray(email: string, date: Dayjs, moodlogsModifiedDataForCalendar: DailyMoodLog[], { signal }: { signal: AbortSignal }) {
     return new Promise<{ daysToHighlight: number[]; outputMoodlogsData: DailyMoodLog[] }>((resolve, reject) => {
-        console.log('Incorporating...', moodlogsModifiedDataForCalendar)
+        console.log('Incorporating moodlog array from DB...', moodlogsModifiedDataForCalendar)
         const timeout = setTimeout(() => {
             const daysInMonth = date.daysInMonth();
             const targetMonth = date.month()
@@ -51,7 +51,6 @@ function generateMonthArray(email: string, date: Dayjs, moodlogsModifiedDataForC
             const daysToHighlight: number[] = []; // not used - KIV in case we want to highlight certain days
             const outputMoodlogsData: DailyMoodLog[] = [];
 
-            console.log('targetmonth', targetMonth)
             for (let i = 1; i <= daysInMonth; i++) {
                 const matchingItem = moodlogsModifiedDataForCalendar.find(
                     (item) =>
@@ -62,7 +61,7 @@ function generateMonthArray(email: string, date: Dayjs, moodlogsModifiedDataForC
 
                 if (matchingItem) {
                     // If data exists, add it to the outputMoodlogsData array
-                    console.log('It matches!')
+                    console.log('Moodlog entry found in DB: ', matchingItem)
                     outputMoodlogsData.push(matchingItem);
                 } else {
                     // If no existing data, generate random mood data for this day
