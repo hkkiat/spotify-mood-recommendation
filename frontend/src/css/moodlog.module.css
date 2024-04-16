@@ -23,3 +23,15 @@ STYLING FOR CHECKBOX COMPONENT
 .checkboxGroup > * {
     margin-right: 50px; /* Adjust as needed */
 }
+
+/* 
+STYLING FOR CALENDAR POP UP
+*/
+
+.popUp {
+    margin-bottom: 20px;
+}
+
+.menuItemIcon {
+    margin-left: 8px;
+}

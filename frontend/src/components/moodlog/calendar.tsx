@@ -5,14 +5,23 @@ import Badge from '@mui/material/Badge';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import InputLabel from '@mui/material/InputLabel';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { BiHome } from 'react-icons/bi'; // Import icons
+import { MdOutlineFamilyRestroom, MdWork, MdNightlife } from "react-icons/md";
+import { GiThreeFriends } from "react-icons/gi";
+import { PiStudentFill } from "react-icons/pi";
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import styles from '../../css/moodlog.module.css'
+import HappyRangeSlider from './happyrangeslider';
 
 
 const CURRENT_DATE = dayjs(); // current date
@@ -101,6 +110,9 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
 
     const [open, setOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
+    const [happiness, setHappiness] = useState('');
+    const [happyRangeValue, setHappyRangeValue] = useState(0.5);
+    const [tempRangeValue, setHappyTempValue] = useState(0.5);
 
     const isCurrentDate = dayjs().isSame(day, 'day'); // Check if the day is the current date to determine if icon should be displayed
 
@@ -128,6 +140,16 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
         setInputValue(event.target.value);
     };
 
+    const handleMostImpactDropdownChange = (event: SelectChangeEvent) => {
+        setHappiness(event.target.value as string);
+    };
+
+    const handleHappyRangeChange = (value: number) => {
+        setHappyRangeValue(value);
+    };
+
+    // MODIFY handleHappinessChange to change db
+    /*
     const handleHappinessChange = (newHappiness: Happiness) => {
         setOpen(false); // Close the dialog after selecting mood
 
@@ -151,6 +173,7 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
         setMoodlogsModifiedDataForCalendar(updatedMoodlogsData);
         updateMoodLog(updatedMoodLog); // pass the new moodlog back to calendar --> back to moodlog component --> gql update 
     };
+    */
 
     return (
         <>
@@ -180,8 +203,8 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
                     onClick={handleClick} // Keep onClick for non-current dates
                 />
             )}
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>{`Edit data for ${day.format('DD/MM/YYYY')}`}</DialogTitle>
+            <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+                <DialogTitle>{`Mood for ${day.format('D MMM YYYY, dddd')}`}</DialogTitle>
                 <IconButton
                     aria-label="close"
                     onClick={handleClose}
@@ -194,24 +217,47 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
                 >
                     <CloseIcon />
                 </IconButton>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="data"
-                    label="Data"
-                    type="text"
-                    fullWidth
-                    value={inputValue}
-                    onChange={handleChange}
-                />
-                <div className='m-2'>
-                    <button className='m-1' onClick={() => handleHappinessChange('very unhappy')}>Very Unhappy</button>
-                    <button className='m-1' onClick={() => handleHappinessChange('unhappy')}>Unhappy</button>
-                    <button className='m-1' onClick={() => handleHappinessChange('neutral')}>Neutral</button>
-                    <button className='m-1' onClick={() => handleHappinessChange('happy')}>Happy</button>
-                    <button className='m-1' onClick={() => handleHappinessChange('very happy')}>Very Happy</button>
-                </div>
-            </Dialog>
+                <DialogContent dividers>
+                    <div className={styles.popUp}>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="overall-feeling-id"
+                            label="How did I feel on this day?"
+                            type="text"
+                            fullWidth
+                            value={inputValue}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className={styles.popUp}>
+                        <InputLabel id="happy-range-label-id">Select Happiness Level:</InputLabel>
+                        <HappyRangeSlider onHappyRangeChange={handleHappyRangeChange}></HappyRangeSlider>
+                    </div>
+                    <InputLabel id="most-impact-label-id">What has the most impact on you?</InputLabel>
+                    <Select
+                        labelId="most-impact-label-id"
+                        id="most-impact-id"
+                        value={happiness}
+                        onChange={handleMostImpactDropdownChange}
+                        sx={{ width: '100%' }}
+                    >
+                        <MenuItem value={"Family"}>Family <MdOutlineFamilyRestroom className={styles.menuItemIcon} /></MenuItem>
+                        <MenuItem value={"Friends"}>Friends <GiThreeFriends className={styles.menuItemIcon} /></MenuItem>
+                        <MenuItem value={"Work"}>Work<MdWork className={styles.menuItemIcon} /></MenuItem>
+                        <MenuItem value={"Life"}>Life <MdNightlife className={styles.menuItemIcon} /></MenuItem>
+                        <MenuItem value={"Study"}>Study <PiStudentFill className={styles.menuItemIcon} /></MenuItem>
+                        <MenuItem value={"Others"}>Others</MenuItem>
+                    </Select>
+                    {/* <div className='m-2'>
+                        <button className='btn btn-primary m-1' onClick={() => handleHappinessChange('very unhappy')}>Very Unhappy</button>
+                        <button className='btn btn-primary m-1' onClick={() => handleHappinessChange('unhappy')}>Unhappy</button>
+                        <button className='btn btn-primary m-1' onClick={() => handleHappinessChange('neutral')}>Neutral</button>
+                        <button className='btn btn-primary m-1' onClick={() => handleHappinessChange('happy')}>Happy</button>
+                        <button className='btn btn-primary m-1' onClick={() => handleHappinessChange('very happy')}>Very Happy</button>
+                    </div> */}
+                </DialogContent>
+            </Dialog >
         </>
     );
 }
