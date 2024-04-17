@@ -22,6 +22,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import styles from '../../css/moodlog.module.css'
 import HappyRangeSlider from './happyrangeslider';
+import Button from '@mui/material/Button';
 
 
 const CURRENT_DATE = dayjs(); // current date
@@ -35,6 +36,12 @@ const happinessValueMap: Record<Happiness, number> = {
     'unhappy': 0.25,
     'very unhappy': 0,
 };
+
+interface MoodLogData {
+    overallfeeling: string;
+    happinesslevel: number;
+    mostimpact: string;
+}
 
 interface DailyMoodLog {
     __typename: string;
@@ -109,71 +116,95 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
     const { email, highlightedDays = [], day, outsideCurrentMonth, moodlogsModifiedDataForCalendar, setMoodlogsModifiedDataForCalendar, updateMoodLog, ...other } = props;
 
     const [open, setOpen] = useState(false);
-    const [inputValue, setInputValue] = useState('');
-    const [happiness, setHappiness] = useState('');
-    const [happyRangeValue, setHappyRangeValue] = useState(0.5);
-    const [tempRangeValue, setHappyTempValue] = useState(0.5);
+    const [initialMoodLogData, setInitialMoodLogData] = useState<MoodLogData | null>(null); // State to store initial mood log data
+    const [overallFeeling, setOverallFeeling] = useState('');
+    const [happinessLevel, setHappinessLevel] = useState(0.5);
+    const [mostImpact, setMostImpact] = useState('');
+
+    useEffect(() => {
+        // Update state when mood logs change
+        setOverallFeeling(moodlogsModifiedDataForCalendar[day.date() - 1]?.overallfeeling || '');
+        setHappinessLevel(moodlogsModifiedDataForCalendar[day.date() - 1]?.happinesslevel || 0.5);
+        setMostImpact(moodlogsModifiedDataForCalendar[day.date() - 1]?.mostimpact || '');
+    }, [day, moodlogsModifiedDataForCalendar]);
 
     const isCurrentDate = dayjs().isSame(day, 'day'); // Check if the day is the current date to determine if icon should be displayed
 
     console.log('This is inside DayComponent, moodlogsModifiedDataForCalendar:', moodlogsModifiedDataForCalendar)
 
-    const happinessLevel = moodlogsModifiedDataForCalendar[props.day.date() - 1]?.happinesslevel || 0; // Adjust index to match day
+    const happinessLevelForColor = moodlogsModifiedDataForCalendar[props.day.date() - 1]?.happinesslevel; // Adjust index to match day
     const colorMap: Record<string, string> = {
-        '1': 'lightgreen',
-        '0.75': 'lightyellow',
-        '0.5': 'lightpink',
-        '0.25': 'lightorange',
+        '1': 'darkgreen',
+        '0.75': 'lightgreen',
+        '0.5': 'lightgrey',
+        '0.25': 'orange',
         '0': 'red',
     };
-    const backgroundColor = colorMap[happinessLevel] || 'grey';
+    const backgroundColor = colorMap[happinessLevelForColor] || 'grey';
 
     const handleClick = () => {
         setOpen(true);
+        setInitialMoodLogData({
+            overallfeeling: overallFeeling,
+            happinesslevel: happinessLevel,
+            mostimpact: mostImpact
+        });
     };
 
     const handleClose = () => {
         setOpen(false);
+        if (initialMoodLogData) {
+            setOverallFeeling(initialMoodLogData.overallfeeling);
+            setHappinessLevel(initialMoodLogData.happinesslevel);
+            setMostImpact(initialMoodLogData.mostimpact);
+        }
     };
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setInputValue(event.target.value);
+        setOverallFeeling(event.target.value);
     };
 
     const handleMostImpactDropdownChange = (event: SelectChangeEvent) => {
-        setHappiness(event.target.value as string);
+        setMostImpact(event.target.value as string);
     };
 
     const handleHappyRangeChange = (value: number) => {
-        setHappyRangeValue(value);
+        setHappinessLevel(value);
     };
 
-    // MODIFY handleHappinessChange to change db
-    /*
-    const handleHappinessChange = (newHappiness: Happiness) => {
-        setOpen(false); // Close the dialog after selecting mood
+    const handleUpdate = () => {
+        // Gather data from all fields and perform necessary actions
+        const updatedData = {
+            overallFeeling: overallFeeling,
+            happinessLevel: happinessLevel,
+            mostImpact: mostImpact
+        };
+        // Update state or perform other actions with the collected data
+        console.log('Updated data before updating state:', updatedData);
 
-        // Update moodData state with the new mood for the selected day
-        const updatedMoodlogsData = [...moodlogsModifiedDataForCalendar];
         const dayIndex = props.day.date() - 1;
+        const updatedMoodlogsData = [...moodlogsModifiedDataForCalendar];
 
-        console.log('this is day index:', updatedMoodlogsData[dayIndex])
-        console.log('this is updatedMoodlogsData', updatedMoodlogsData)
+        console.log("Original data:", updatedMoodlogsData[dayIndex])
         updatedMoodlogsData[dayIndex] = {
             ...updatedMoodlogsData[dayIndex],
-            happinesslevel: happinessValueMap[newHappiness], // Update the happiness level
+            // Update fields with new data
+            overallfeeling: updatedData.overallFeeling,
+            happinesslevel: updatedData.happinessLevel,
+            mostimpact: updatedData.mostImpact
         };
-        console.log('this is day index2:', updatedMoodlogsData[dayIndex])
-        console.log('this is updatedMoodlogsData', updatedMoodlogsData)
+
         const updatedMoodLog = {
             email: email,
             logdatetime: day,
-            happinesslevel: happinessValueMap[newHappiness], // New happiness selected by the user
+            overallfeeling: updatedData.overallFeeling,
+            happinesslevel: updatedData.happinessLevel,
+            mostimpact: updatedData.mostImpact
         };
-        setMoodlogsModifiedDataForCalendar(updatedMoodlogsData);
-        updateMoodLog(updatedMoodLog); // pass the new moodlog back to calendar --> back to moodlog component --> gql update 
+
+        setMoodlogsModifiedDataForCalendar(updatedMoodlogsData); // update calendar state
+        updateMoodLog(updatedMoodLog) // pass the new moodlog back to calendar --> back to moodlog component --> gql update 
     };
-    */
 
     return (
         <>
@@ -226,19 +257,19 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
                             label="How did I feel on this day?"
                             type="text"
                             fullWidth
-                            value={inputValue}
+                            value={overallFeeling}
                             onChange={handleChange}
                         />
                     </div>
                     <div className={styles.popUp}>
                         <InputLabel id="happy-range-label-id">Select Happiness Level:</InputLabel>
-                        <HappyRangeSlider onHappyRangeChange={handleHappyRangeChange}></HappyRangeSlider>
+                        <HappyRangeSlider happinessLevel={happinessLevel} onHappyRangeChange={handleHappyRangeChange}></HappyRangeSlider>
                     </div>
                     <InputLabel id="most-impact-label-id">What has the most impact on you?</InputLabel>
                     <Select
                         labelId="most-impact-label-id"
                         id="most-impact-id"
-                        value={happiness}
+                        value={mostImpact}
                         onChange={handleMostImpactDropdownChange}
                         sx={{ width: '100%' }}
                     >
@@ -249,13 +280,7 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
                         <MenuItem value={"Study"}>Study <PiStudentFill className={styles.menuItemIcon} /></MenuItem>
                         <MenuItem value={"Others"}>Others</MenuItem>
                     </Select>
-                    {/* <div className='m-2'>
-                        <button className='btn btn-primary m-1' onClick={() => handleHappinessChange('very unhappy')}>Very Unhappy</button>
-                        <button className='btn btn-primary m-1' onClick={() => handleHappinessChange('unhappy')}>Unhappy</button>
-                        <button className='btn btn-primary m-1' onClick={() => handleHappinessChange('neutral')}>Neutral</button>
-                        <button className='btn btn-primary m-1' onClick={() => handleHappinessChange('happy')}>Happy</button>
-                        <button className='btn btn-primary m-1' onClick={() => handleHappinessChange('very happy')}>Very Happy</button>
-                    </div> */}
+                    <Button variant="contained" color="primary" onClick={handleUpdate}>Submit</Button>
                 </DialogContent>
             </Dialog >
         </>
