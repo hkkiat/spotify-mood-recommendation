@@ -23,6 +23,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import styles from '../../css/moodlog.module.css'
 import HappyRangeSlider from './happyrangeslider';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
 
 const CURRENT_DATE = dayjs(); // current date
@@ -280,7 +281,9 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
                         <MenuItem value={"Study"}>Study <PiStudentFill className={styles.menuItemIcon} /></MenuItem>
                         <MenuItem value={"Others"}>Others</MenuItem>
                     </Select>
-                    <Button variant="contained" color="primary" onClick={handleUpdate}>Submit</Button>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                        <Button variant="contained" color="primary" onClick={handleUpdate}>Submit</Button>
+                    </Box>
                 </DialogContent>
             </Dialog >
         </>
