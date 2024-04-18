@@ -19,75 +19,75 @@ const moodlogs = [
   {
     email: "example2@example.com",
     logdatetime: ISODate("2024-04-01T15:35:31.585Z"),
-    overallfeeling: "Not happy",
+    overallfeeling: "Not happy because of work",
     happinesslevel: 0,
-    mostimpact: "WORK"
+    mostimpact: "Work"
   }, {
     email: "example@example.com",
     logdatetime: ISODate("2024-04-02T15:35:31.585Z"),
-    overallfeeling: "I am feeling happy today",
+    overallfeeling: "I am feeling happy today because of family",
     happinesslevel: 0.75,
-    mostimpact: "FAMILY"
+    mostimpact: "Family"
   }, {
     email: "example@example.com",
     logdatetime: ISODate("2024-04-03T15:35:31.585Z"),
-    overallfeeling: "I am feeling happy today",
+    overallfeeling: "I am feeling happy today because my boss praised me",
     happinesslevel: 1,
-    mostimpact: "WORK"
+    mostimpact: "Work"
   }, {
     email: "example@example.com",
     logdatetime: ISODate("2024-04-04T15:35:31.585Z"),
-    overallfeeling: "sad",
+    overallfeeling: "Just not feeling it today...",
     happinesslevel: 0.25,
-    mostimpact: "OTHERS"
+    mostimpact: "Others"
   }, {
     email: "example@example.com",
     logdatetime: ISODate("2024-04-05T15:35:31.585Z"),
-    overallfeeling: "normal",
+    overallfeeling: "Neutral day, got to spend time with Family",
     happinesslevel: 0.5,
-    mostimpact: "FAMILY"
+    mostimpact: "Family"
   }, {
     email: "example@example.com",
     logdatetime: ISODate("2024-04-28T21:35:31.585Z"),
-    overallfeeling: "I am feeling happy today",
+    overallfeeling: "I am feeling happy today, spent time with kids",
     happinesslevel: 1,
-    mostimpact: "FAMILY"
+    mostimpact: "Family"
   }, {
     email: "example@example.com",
     logdatetime: ISODate("2024-04-22T15:35:31.585Z"),
-    overallfeeling: "I am feeling happy today",
+    overallfeeling: "I am feeling happy today, got a promotion at work",
     happinesslevel: 0.75,
-    mostimpact: "WORK"
+    mostimpact: "Work"
   }, {
     email: "example@example.com",
     logdatetime: ISODate("2024-04-17T15:35:31.585Z"),
-    overallfeeling: "NORMAL",
+    overallfeeling: "Quite normal day",
     happinesslevel: 0.5,
-    mostimpact: "FAMILY"
+    mostimpact: "Family"
   }, {
     email: "example2@example.com",
     logdatetime: ISODate("2024-04-19T15:35:31.585Z"),
-    overallfeeling: "tired",
+    overallfeeling: "Mentally tired from hanging out",
     happinesslevel: 0.25,
-    mostimpact: "FRIENDS"
+    mostimpact: "Friends"
   },{
     email: "example@example.com",
     logdatetime: ISODate("2024-05-19T15:35:31.585Z"),
-    overallfeeling: "cant wait to meet friends",
+    overallfeeling: "Cant wait to meet friends this week, work is a chore",
     happinesslevel: 0.25,
-    mostimpact: "WORK"
+    mostimpact: "Work"
   },{
     email: "example2@example.com",
     logdatetime: ISODate("2024-05-02T15:35:31.585Z"),
-    overallfeeling: "tired",
+    overallfeeling: "Socialising is tiring",
     happinesslevel: 0.5,
-    mostimpact: "FRIENDS"
+    mostimpact: "Friends"
   },{
     email: "example@example.com",
     logdatetime: ISODate("2024-05-21T15:35:31.585Z"),
-    overallfeeling: "really tired",
-    happinesslevel: 0.25,
-    mostimpact: "FAMILY"
+    overallfeeling: "tired from taking care of family",
+    happinesslevel: 0,
+    mostimpact: "Family"
   },
 ];
 

@@ -18,9 +18,9 @@ interface MoodLogProps {
 interface DailyMoodLogInputFromCalendar {
   email: string;
   logdatetime: string; // Assuming this is a string representation of a date
-  // overallfeeling: string;
+  overallfeeling: string;
   happinesslevel: number;
-  // mostimpact: string;
+  mostimpact: string;
 }
 
 const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
@@ -66,9 +66,9 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     const moodLogInput = {
       email: email,
       logdatetime: updatedMoodLog.logdatetime,
-      overallFeeling: '',
+      overallfeeling: updatedMoodLog.overallfeeling,
       happinesslevel: updatedMoodLog.happinesslevel,
-      mostimpact: '',
+      mostimpact: updatedMoodLog.mostimpact,
     }
     // TO DO - use gql update function
     console.log("moodLogInput passed from calendar component:", moodLogInput);

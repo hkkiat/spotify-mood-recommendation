@@ -5,12 +5,25 @@ import Badge from '@mui/material/Badge';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import InputLabel from '@mui/material/InputLabel';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { BiHome } from 'react-icons/bi'; // Import icons
+import { MdOutlineFamilyRestroom, MdWork, MdNightlife } from "react-icons/md";
+import { GiThreeFriends } from "react-icons/gi";
+import { PiStudentFill } from "react-icons/pi";
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import styles from '../../css/moodlog.module.css'
+import HappyRangeSlider from './happyrangeslider';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
 
 const CURRENT_DATE = dayjs(); // current date
@@ -24,6 +37,12 @@ const happinessValueMap: Record<Happiness, number> = {
     'unhappy': 0.25,
     'very unhappy': 0,
 };
+
+interface MoodLogData {
+    overallfeeling: string;
+    happinesslevel: number;
+    mostimpact: string;
+}
 
 interface DailyMoodLog {
     __typename: string;
@@ -43,7 +62,7 @@ interface CalendarProps {
 
 function generateMonthArray(email: string, date: Dayjs, moodlogsModifiedDataForCalendar: DailyMoodLog[], { signal }: { signal: AbortSignal }) {
     return new Promise<{ daysToHighlight: number[]; outputMoodlogsData: DailyMoodLog[] }>((resolve, reject) => {
-        console.log('Incorporating...', moodlogsModifiedDataForCalendar)
+        console.log('Incorporating moodlog array from DB...', moodlogsModifiedDataForCalendar)
         const timeout = setTimeout(() => {
             const daysInMonth = date.daysInMonth();
             const targetMonth = date.month()
@@ -51,7 +70,6 @@ function generateMonthArray(email: string, date: Dayjs, moodlogsModifiedDataForC
             const daysToHighlight: number[] = []; // not used - KIV in case we want to highlight certain days
             const outputMoodlogsData: DailyMoodLog[] = [];
 
-            console.log('targetmonth', targetMonth)
             for (let i = 1; i <= daysInMonth; i++) {
                 const matchingItem = moodlogsModifiedDataForCalendar.find(
                     (item) =>
@@ -62,7 +80,7 @@ function generateMonthArray(email: string, date: Dayjs, moodlogsModifiedDataForC
 
                 if (matchingItem) {
                     // If data exists, add it to the outputMoodlogsData array
-                    console.log('It matches!')
+                    console.log('Moodlog entry found in DB: ', matchingItem)
                     outputMoodlogsData.push(matchingItem);
                 } else {
                     // If no existing data, generate random mood data for this day
@@ -99,56 +117,94 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
     const { email, highlightedDays = [], day, outsideCurrentMonth, moodlogsModifiedDataForCalendar, setMoodlogsModifiedDataForCalendar, updateMoodLog, ...other } = props;
 
     const [open, setOpen] = useState(false);
-    const [inputValue, setInputValue] = useState('');
+    const [initialMoodLogData, setInitialMoodLogData] = useState<MoodLogData | null>(null); // State to store initial mood log data
+    const [overallFeeling, setOverallFeeling] = useState('');
+    const [happinessLevel, setHappinessLevel] = useState(0.5);
+    const [mostImpact, setMostImpact] = useState('');
+
+    useEffect(() => {
+        // Update state when mood logs change
+        setOverallFeeling(moodlogsModifiedDataForCalendar[day.date() - 1]?.overallfeeling || '');
+        setHappinessLevel(moodlogsModifiedDataForCalendar[day.date() - 1]?.happinesslevel || 0.5);
+        setMostImpact(moodlogsModifiedDataForCalendar[day.date() - 1]?.mostimpact || '');
+    }, [day, moodlogsModifiedDataForCalendar]);
 
     const isCurrentDate = dayjs().isSame(day, 'day'); // Check if the day is the current date to determine if icon should be displayed
 
     console.log('This is inside DayComponent, moodlogsModifiedDataForCalendar:', moodlogsModifiedDataForCalendar)
 
-    const happinessLevel = moodlogsModifiedDataForCalendar[props.day.date() - 1]?.happinesslevel || 0; // Adjust index to match day
+    const happinessLevelForColor = moodlogsModifiedDataForCalendar[props.day.date() - 1]?.happinesslevel; // Adjust index to match day
     const colorMap: Record<string, string> = {
-        '1': 'lightgreen',
-        '0.75': 'lightyellow',
-        '0.5': 'lightpink',
-        '0.25': 'lightorange',
+        '1': 'darkgreen',
+        '0.75': 'lightgreen',
+        '0.5': 'lightgrey',
+        '0.25': 'orange',
         '0': 'red',
     };
-    const backgroundColor = colorMap[happinessLevel] || 'grey';
+    const backgroundColor = colorMap[happinessLevelForColor] || 'grey';
 
     const handleClick = () => {
         setOpen(true);
+        setInitialMoodLogData({
+            overallfeeling: overallFeeling,
+            happinesslevel: happinessLevel,
+            mostimpact: mostImpact
+        });
     };
 
     const handleClose = () => {
         setOpen(false);
+        if (initialMoodLogData) {
+            setOverallFeeling(initialMoodLogData.overallfeeling);
+            setHappinessLevel(initialMoodLogData.happinesslevel);
+            setMostImpact(initialMoodLogData.mostimpact);
+        }
     };
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setInputValue(event.target.value);
+        setOverallFeeling(event.target.value);
     };
 
-    const handleHappinessChange = (newHappiness: Happiness) => {
-        setOpen(false); // Close the dialog after selecting mood
+    const handleMostImpactDropdownChange = (event: SelectChangeEvent) => {
+        setMostImpact(event.target.value as string);
+    };
 
-        // Update moodData state with the new mood for the selected day
-        const updatedMoodlogsData = [...moodlogsModifiedDataForCalendar];
+    const handleHappyRangeChange = (value: number) => {
+        setHappinessLevel(value);
+    };
+
+    const handleUpdate = () => {
+        // Gather data from all fields and perform necessary actions
+        const updatedData = {
+            overallFeeling: overallFeeling,
+            happinessLevel: happinessLevel,
+            mostImpact: mostImpact
+        };
+        // Update state or perform other actions with the collected data
+        console.log('Updated data before updating state:', updatedData);
+
         const dayIndex = props.day.date() - 1;
+        const updatedMoodlogsData = [...moodlogsModifiedDataForCalendar];
 
-        console.log('this is day index:', updatedMoodlogsData[dayIndex])
-        console.log('this is updatedMoodlogsData', updatedMoodlogsData)
+        console.log("Original data:", updatedMoodlogsData[dayIndex])
         updatedMoodlogsData[dayIndex] = {
             ...updatedMoodlogsData[dayIndex],
-            happinesslevel: happinessValueMap[newHappiness], // Update the happiness level
+            // Update fields with new data
+            overallfeeling: updatedData.overallFeeling,
+            happinesslevel: updatedData.happinessLevel,
+            mostimpact: updatedData.mostImpact
         };
-        console.log('this is day index2:', updatedMoodlogsData[dayIndex])
-        console.log('this is updatedMoodlogsData', updatedMoodlogsData)
+
         const updatedMoodLog = {
             email: email,
             logdatetime: day,
-            happinesslevel: happinessValueMap[newHappiness], // New happiness selected by the user
+            overallfeeling: updatedData.overallFeeling,
+            happinesslevel: updatedData.happinessLevel,
+            mostimpact: updatedData.mostImpact
         };
-        setMoodlogsModifiedDataForCalendar(updatedMoodlogsData);
-        updateMoodLog(updatedMoodLog); // pass the new moodlog back to calendar --> back to moodlog component --> gql update 
+
+        setMoodlogsModifiedDataForCalendar(updatedMoodlogsData); // update calendar state
+        updateMoodLog(updatedMoodLog) // pass the new moodlog back to calendar --> back to moodlog component --> gql update 
     };
 
     return (
@@ -179,26 +235,57 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
                     onClick={handleClick} // Keep onClick for non-current dates
                 />
             )}
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>{`Enter data for ${day.format('DD/MM/YYYY')}`}</DialogTitle>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="data"
-                    label="Data"
-                    type="text"
-                    fullWidth
-                    value={inputValue}
-                    onChange={handleChange}
-                />
-                <div className='m-2'>
-                    <button className='m-1' onClick={() => handleHappinessChange('very unhappy')}>Very Unhappy</button>
-                    <button className='m-1' onClick={() => handleHappinessChange('unhappy')}>Unhappy</button>
-                    <button className='m-1' onClick={() => handleHappinessChange('neutral')}>Neutral</button>
-                    <button className='m-1' onClick={() => handleHappinessChange('happy')}>Happy</button>
-                    <button className='m-1' onClick={() => handleHappinessChange('very happy')}>Very Happy</button>
-                </div>
-            </Dialog>
+            <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+                <DialogTitle>{`Mood for ${day.format('D MMM YYYY, dddd')}`}</DialogTitle>
+                <IconButton
+                    aria-label="close"
+                    onClick={handleClose}
+                    sx={{
+                        position: 'absolute',
+                        right: 8,
+                        top: 8,
+                        color: (theme) => theme.palette.grey[500],
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+                <DialogContent dividers>
+                    <div className={styles.popUp}>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="overall-feeling-id"
+                            label="How did I feel on this day?"
+                            type="text"
+                            fullWidth
+                            value={overallFeeling}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className={styles.popUp}>
+                        <InputLabel id="happy-range-label-id">Select Happiness Level:</InputLabel>
+                        <HappyRangeSlider happinessLevel={happinessLevel} onHappyRangeChange={handleHappyRangeChange}></HappyRangeSlider>
+                    </div>
+                    <InputLabel id="most-impact-label-id">What has the most impact on you?</InputLabel>
+                    <Select
+                        labelId="most-impact-label-id"
+                        id="most-impact-id"
+                        value={mostImpact}
+                        onChange={handleMostImpactDropdownChange}
+                        sx={{ width: '100%' }}
+                    >
+                        <MenuItem value={"Family"}>Family <MdOutlineFamilyRestroom className={styles.menuItemIcon} /></MenuItem>
+                        <MenuItem value={"Friends"}>Friends <GiThreeFriends className={styles.menuItemIcon} /></MenuItem>
+                        <MenuItem value={"Work"}>Work<MdWork className={styles.menuItemIcon} /></MenuItem>
+                        <MenuItem value={"Life"}>Life <MdNightlife className={styles.menuItemIcon} /></MenuItem>
+                        <MenuItem value={"Study"}>Study <PiStudentFill className={styles.menuItemIcon} /></MenuItem>
+                        <MenuItem value={"Others"}>Others</MenuItem>
+                    </Select>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                        <Button variant="contained" color="primary" onClick={handleUpdate}>Submit</Button>
+                    </Box>
+                </DialogContent>
+            </Dialog >
         </>
     );
 }
