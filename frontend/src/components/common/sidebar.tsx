@@ -17,7 +17,7 @@ function Sidebar({ currentPage }: SideBarProps) {
     <div className="sidebar">
       <ul className="nav flex-column">
         <UserProfile></UserProfile>
-        <NavItem linkText="Home" active={currentPage === '/'} icon={<BiHome />} />
+        <NavItem linkText="Home" active={currentPage === '/home'} icon={<BiHome />} />
         <NavItem linkText="Logout" active={currentPage === '/logout'} icon={<BiLogOut />} />
         <NavItem linkText="Mood Log" active={currentPage === '/moodlog'} icon={<BiChart />} />
         <NavItem linkText="Recommend" active={currentPage === '/recommend'} icon={<BiCommand />} />

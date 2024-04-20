@@ -1,3 +1,5 @@
+require('dotenv').config({ path: './.env' });
+
 const fs = require('fs');
 const express = require('express');
 const { ApolloServer, UserInputError } = require('apollo-server-express');
@@ -8,6 +10,7 @@ const cors = require('cors'); // Import the cors middleware
 const cookieParser = require('cookie-parser');
 const { jwtSecret } = require('./config');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 
 
 
@@ -20,7 +23,7 @@ const verifyTokenMiddleware = (req, res, next) => {
       return next();
     }
   }
-  
+
   if (req.cookies && req.cookies._token) {
     token = req.cookies._token;
   }
@@ -59,12 +62,12 @@ app.use(express.json());
 app.use(cookieParser()); // Make sure to use cookieParser before your custom middleware if you're using cookies
 app.use(verifyTokenMiddleware);
 
-(async function() {
+(async function () {
   try {
     await server.start();
     server.applyMiddleware({ app, path: '/graphql' });
 
-} catch (err) {
+  } catch (err) {
     console.log('ERROR:', err);
   }
 })();
@@ -80,3 +83,4 @@ app.use(verifyTokenMiddleware);
     console.log('ERROR:', err);
   }
 })();
+

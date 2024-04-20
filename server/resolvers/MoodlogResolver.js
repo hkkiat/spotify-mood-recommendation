@@ -2,7 +2,7 @@
 
 async function getAllMoodLogs(_, { email }, { db }) {
   /*
-  Code to extract
+  Function to extract all moodlogs belonging to the user based on email address
   */
 
   try {
@@ -19,20 +19,91 @@ async function getAllMoodLogs(_, { email }, { db }) {
 }
 
 async function createMoodLog(_, { moodlog }, { db }) {
+  /* 
+  Function to update moodlog if it exists, otherwise creates a new moodlog entry
+  */
   try {
-    console.log("Creating moodlog...", moodlog)
-    const collection = db.collection('moodlog');
+    let updatedMoodLog = await updateMoodLog(_, { moodlog }, { db });
 
-    // Insert the moodlog into the database
-    const result = await collection.insertOne(moodlog);
+    // If the update succeeds, return the updated mood log
+    if (updatedMoodLog) {
+      console.log("Mood log updated:", updatedMoodLog);
+      return updatedMoodLog;
+    } else {
+      console.log("Creating moodlog...", moodlog)
+      const collection = db.collection('moodlog');
 
-    // Retrieve the inserted moodlog from the database
-    const insertedMoodLog = await collection.findOne({ _id: result.insertedId });
+      // Insert the moodlog into the database
+      const result = await collection.insertOne(moodlog);
 
-    return insertedMoodLog;
+      // Retrieve the inserted moodlog from the database
+      const insertedMoodLog = await collection.findOne({ _id: result.insertedId });
+
+      return insertedMoodLog;
+    }
   } catch (error) {
     throw new Error('Failed to create mood log: ' + error.message);
   }
 }
 
-module.exports = { getAllMoodLogs, createMoodLog };
+async function getExistingMoodLog(_, { email, date }, { db }) {
+  /* 
+  Function to search for existing moodlog on the same day, returns if found
+  */
+  try {
+    console.log(`Finding particular moodlog for user: ${email} on date: ${date}`)
+    const collection = db.collection('moodlog');
+
+    const startDate = new Date(date);
+    startDate.setUTCHours(0, 0, 0, 0); // Set start time to 00:00:00 UTC
+    const endDate = new Date(startDate.getTime() + (24 * 60 * 60 * 1000));
+    endDate.setUTCHours(0, 0, 0, 0); // Set end time to 00:00:00 UTC of the next day
+
+    console.log(`Start range: ${startDate}`)
+    console.log(`End range: ${endDate}`)
+
+    // Insert the moodlog into the database
+    const result = await collection.findOne({
+      email: email,
+      logdatetime: {
+        $gte: startDate, // Start date
+        $lt: endDate    // End date (exclusive)
+      }
+    })
+    return result;
+  } catch (error) {
+    throw new Error('Failed to find moodlog: ' + error.message);
+  }
+}
+
+async function updateMoodLog(_, { moodlog }, { db }) {
+  /*
+  Function to search for existing moodlog on the same day, updates it if it exists 
+  */
+  try {
+    console.log(`Updating moodlog...`, moodlog);
+
+    // Find the existing mood log in the database
+    const existingMoodLog = await getExistingMoodLog(_, { email: moodlog.email, date: moodlog.logdatetime }, { db });
+
+    // If an existing mood log is found, update it; otherwise, throw an error
+    if (existingMoodLog) {
+      const collection = db.collection('moodlog');
+
+      // Update the existing mood log in the database
+      await collection.updateOne(
+        { _id: existingMoodLog._id },
+        { $set: moodlog }
+      );
+
+      // Return the updated mood log
+      return { ...existingMoodLog, ...moodlog };
+    } else {
+      console.log("No moodlog found to update")
+    }
+  } catch (error) {
+    throw new Error('Failed to update mood log: ' + error.message);
+  }
+}
+
+module.exports = { getAllMoodLogs, getExistingMoodLog, createMoodLog, updateMoodLog};

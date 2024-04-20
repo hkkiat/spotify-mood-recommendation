@@ -25,39 +25,76 @@ type MoodLog {
   email: String!
   logdatetime: GraphQLDate!
   overallfeeling: String!
-  happinesslevel: Int!
-  mostimpact: ImpactEnum!
-}
-
-enum ImpactEnum {
-  FAMILY
-  FRIENDS
-  WORK
-  LIFE
-  STUDY
+  happinesslevel: Float!
+  mostimpact: String!
 }
 
 input InputMoodLog {
   email: String!
   logdatetime: GraphQLDate!
   overallfeeling: String!
-  happinesslevel: Int!
-  mostimpact: ImpactEnum!
+  happinesslevel: Float!
+  mostimpact: String!
 }
+
+# Spotify
+type AuthData {
+  userId: String!
+  accessToken: String!
+  refreshToken: String!
+  expiresAt: GraphQLDate!
+}
+
+type Artist {
+  id: String!
+  name: String!
+  topTracks: [Track!]!
+}
+
+type Track {
+  id: String!
+  name: String!
+  artists: [Artist!]!
+  valence: Float
+  danceability: Float
+  energy: Float
+}
+
+type Playlist {
+  id: String!
+  name: String!
+  tracks: [Track!]!
+}
+
 
 type Query {
   # Query to retrieve all moodlogs for person
   getAllMoodLogs(email: String!): [MoodLog]
   listTravellers: [Ticket]!
   findBlackListTraveller(travellername: String, travellerphone: Int): Boolean!
+  	# Query to retrieve all moodlogs for person
+  getAllMoodLogs(email: String!): [MoodLog]
+  getExistingMoodLog(email: String!, date: GraphQLDate!): MoodLog
+	listTravellers:[Ticket]!
+	findBlackListTraveller(
+		travellername: String,
+		travellerphone: Int): Boolean!
+	getUserFavorites(userId: String!): [Artist]
+
 }
 
 type Mutation {
-  # Mutation to create a day's moodlog for person
-  createMoodLog(moodlog: InputMoodLog!): MoodLog
-  addTraveller(ticket: InputTicket!): Ticket!
-  deleteTraveller(travellername: String!): Boolean!
-  blacklistTravellerName(travellername: String!): Boolean
-  blacklistTravellerPhone(travellerphone: Int!): Boolean
+	# Mutation to create a day's moodlog for person
+	createMoodLog(moodlog: InputMoodLog!): MoodLog
+  updateMoodLog(moodlog: InputMoodLog!): MoodLog
+	addTraveller(ticket: InputTicket!): Ticket!
+	deleteTraveller(travellername: String!): Boolean!
+	blacklistTravellerName(travellername: String!): Boolean
+	blacklistTravellerPhone(travellerphone: Int!): Boolean
+	# Spotify mutations
+	authorize(code: String!): AuthData
+  	refreshAccessToken(userId: String!): AuthData
+  	createPlaylistBasedOnFavorites(userId: String!, moodvalue: Float!): Playlist!
   login(email: String!, password: String!): Boolean!
+
 }

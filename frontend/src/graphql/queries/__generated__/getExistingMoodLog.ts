@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: getAllMoodLogs
+// GraphQL query operation: getExistingMoodLog
 // ====================================================
 
-export interface getAllMoodLogs_getAllMoodLogs {
+export interface getExistingMoodLog_getExistingMoodLog {
   __typename: "MoodLog";
   _id: string;
   email: string;
@@ -17,13 +17,11 @@ export interface getAllMoodLogs_getAllMoodLogs {
   mostimpact: string;
 }
 
-export interface getAllMoodLogs {
-  /**
-   * Query to retrieve all moodlogs for person
-   */
-  getAllMoodLogs: (getAllMoodLogs_getAllMoodLogs | null)[] | null;
+export interface getExistingMoodLog {
+  getExistingMoodLog: getExistingMoodLog_getExistingMoodLog | null;
 }
 
-export interface getAllMoodLogsVariables {
+export interface getExistingMoodLogVariables {
   email: string;
+  date: any;
 }

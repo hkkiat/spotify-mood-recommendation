@@ -8,9 +8,11 @@
     "express": "^4.19.2",
     "graphql": "^15.8.0",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^3.7.3"
+    "mongodb": "^3.7.3",
+    "spotify-web-api-node": "^5.0.2"
   },
   "scripts": {
     "start": "node server.js"
+   
   }
 }

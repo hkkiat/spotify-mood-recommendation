@@ -1,8 +1,10 @@
 const { Kind } = require('graphql/language');
 const { GraphQLScalarType } = require('graphql');
-const { listTravellers, addTraveller, deleteTraveller, findBlackListTraveller, blacklistTravellerName,  blacklistTravellerPhone} = require('./TravellerResolver');
+const { listTravellers, addTraveller, deleteTraveller, findBlackListTraveller, blacklistTravellerName, blacklistTravellerPhone } = require('./TravellerResolver');
 const { getAllMoodLogs, createMoodLog } = require('./MoodlogResolver');
 const { login } = require('./SessionControlResolver');
+const { getAllMoodLogs, getExistingMoodLog, createMoodLog, updateMoodLog } = require('./MoodlogResolver');
+const { authorize, refreshAccessToken, createPlaylistBasedOnFavorites } = require('./SpotifyResolver');
 
 const GraphQLDate = new GraphQLScalarType({
   name: 'GraphQLDate',
@@ -29,16 +31,21 @@ const resolvers = {
   Query: {
     listTravellers,
     findBlackListTraveller,
+    getExistingMoodLog,
     getAllMoodLogs,
   },
   Mutation: {
     createMoodLog,
+    updateMoodLog,
     addTraveller,
     deleteTraveller,
     /*Q4. Make an entry for blacklistTraveller resolver here*/
     blacklistTravellerName,
     blacklistTravellerPhone,
     login,
+    authorize,
+    refreshAccessToken,
+    createPlaylistBasedOnFavorites,
   },
   GraphQLDate,
 };

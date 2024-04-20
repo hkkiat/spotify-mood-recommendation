@@ -21,8 +21,8 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path='/' element={<HomePage />} />
-        <Route path='/ticket' element={<TicketToRide />} />
+        <Route path='/home' element={<HomePage currentPage={currentPage} email='example@example.com'/>} />
+        {/* <Route path='/ticket' element={<TicketToRide />} /> */}
         <Route path='/moodlog' element={<MoodLog currentPage={currentPage} email='example@example.com' />} />
       </Routes>
     </div>

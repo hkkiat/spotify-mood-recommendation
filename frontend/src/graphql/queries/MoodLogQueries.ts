@@ -12,3 +12,16 @@ query getAllMoodLogs($email: String!) {
   }
 }
 `;
+
+export const getExistingMoodLogQuery = gql`
+query getExistingMoodLog($email: String!, $date: GraphQLDate!) {
+  getExistingMoodLog(email: $email, date: $date) {
+    _id
+    email
+    logdatetime
+    overallfeeling
+    happinesslevel
+    mostimpact
+  }
+}
+`
