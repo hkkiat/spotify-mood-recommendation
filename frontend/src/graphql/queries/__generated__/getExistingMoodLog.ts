@@ -18,6 +18,9 @@ export interface getExistingMoodLog_getExistingMoodLog {
 }
 
 export interface getExistingMoodLog {
+  /**
+   * Query to retrieve all moodlogs for person
+   */
   getExistingMoodLog: getExistingMoodLog_getExistingMoodLog | null;
 }
 

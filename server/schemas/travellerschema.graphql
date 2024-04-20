@@ -1,8 +1,11 @@
 scalar GraphQLDate
 
-
-
 # TYPES FOR MOODLOG
+
+type CommonResponse {
+  message: String!
+  extra: String
+}
 
 type MoodLog {
   _id: ID!
@@ -66,7 +69,8 @@ type Mutation {
   updateMoodLog(moodlog: InputMoodLog!): MoodLog
 	# Spotify mutations
 	authorize(code: String!): AuthData
-  	refreshAccessToken(userId: String!): AuthData
-  	createPlaylistBasedOnFavorites(userId: String!, moodvalue: Float!): Playlist!
-  login(email: String!, password: String!): Boolean!
+  refreshAccessToken(userId: String!): AuthData
+  createPlaylistBasedOnFavorites(userId: String!, moodvalue: Float!): Playlist!
+  login(email: String!, password: String!): CommonResponse!
+  register(email: String!, password: String!): CommonResponse!
 }

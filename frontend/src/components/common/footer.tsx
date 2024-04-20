@@ -22,7 +22,7 @@ const Footer = () => {
             <p className="text-center">© 2024 Mood Tracker. All rights reserved.</p>
           </div>
         </div>
-      </div>
+      </div>  
     </footer>
   );
 }

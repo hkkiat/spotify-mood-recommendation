@@ -16,11 +16,16 @@ const path = require('path');
 
 const verifyTokenMiddleware = (req, res, next) => {
   let token;
-  console.log(req.body)
-  const bypassOperations = ["login", "register"]
-  if (req.body && req.body.operationName) {
-    if (bypassOperations.includes(req.body.operationName)) {
-      return next();
+  console.log("Check request body", req.body)
+  const bypassOperations = ["login", "register", "IntrospectionQuery"]
+  if (req.body) {
+    if (req.body.operationName) {
+      if (bypassOperations.includes(req.body.operationName)) {
+        return next();
+      }
+    } else {
+      // We skip authorization for the first handshake when there is no req body
+      return next()
     }
   }
 
@@ -60,11 +65,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser()); // Make sure to use cookieParser before your custom middleware if you're using cookies
-app.use(verifyTokenMiddleware);
 
 (async function () {
   try {
     await server.start();
+    app.use('/graphql', verifyTokenMiddleware);
     server.applyMiddleware({ app, path: '/graphql' });
 
   } catch (err) {
