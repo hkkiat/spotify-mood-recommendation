@@ -1,21 +1,21 @@
 scalar GraphQLDate
 
 type Ticket {
-	_id: ID!
-	id: Int!
-	name: String!
-	phone: Int!
-	gender: String!
-	isMember: String!
-	bookingTime: GraphQLDate!
+  _id: ID!
+  id: Int!
+  name: String!
+  phone: Int!
+  gender: String!
+  isMember: String!
+  bookingTime: GraphQLDate!
 }
 
 input InputTicket {
-	name: String!
-	phone: Int!
-	gender: String!
-	isMember: String!
-	bookingTime: GraphQLDate!
+  name: String!
+  phone: Int!
+  gender: String!
+  isMember: String!
+  bookingTime: GraphQLDate!
 }
 
 # TYPES FOR MOODLOG
@@ -46,20 +46,18 @@ input InputMoodLog {
 }
 
 type Query {
-	# Query to retrieve all moodlogs for person
-  	getAllMoodLogs(email: String!): [MoodLog]
-	listTravellers:[Ticket]!
-	findBlackListTraveller(
-		travellername: String,
-		travellerphone: Int): Boolean!
+  # Query to retrieve all moodlogs for person
+  getAllMoodLogs(email: String!): [MoodLog]
+  listTravellers: [Ticket]!
+  findBlackListTraveller(travellername: String, travellerphone: Int): Boolean!
 }
 
 type Mutation {
-	# Mutation to create a day's moodlog for person
-	createMoodLog(moodlog: InputMoodLog!): MoodLog
-	addTraveller(ticket: InputTicket!): Ticket!
-	deleteTraveller(travellername: String!): Boolean!
-	blacklistTravellerName(travellername: String!): Boolean
-	blacklistTravellerPhone(travellerphone: Int!): Boolean
+  # Mutation to create a day's moodlog for person
+  createMoodLog(moodlog: InputMoodLog!): MoodLog
+  addTraveller(ticket: InputTicket!): Ticket!
+  deleteTraveller(travellername: String!): Boolean!
+  blacklistTravellerName(travellername: String!): Boolean
+  blacklistTravellerPhone(travellerphone: Int!): Boolean
+  login(email: String!, password: String!): Boolean!
 }
-
