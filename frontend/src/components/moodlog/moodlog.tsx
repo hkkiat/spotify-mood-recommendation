@@ -9,6 +9,8 @@ import { getAllMoodLogsQuery } from '../../graphql/queries/MoodLogQueries';
 import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/__generated__/getAllMoodLogs';
 import { createMoodLog, createMoodLogVariables } from '../../graphql/mutations/__generated__/createMoodLog';
 import { createMoodLogMutation } from '../../graphql/mutations/MoodLogMutations';
+import HappyRangeSlider from './happyrangeslider';
+import styles from '../../css/moodlog.module.css'
 
 interface MoodLogProps {
   email: string;
@@ -123,10 +125,11 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     <Layout currentPage={currentPage}>
       <Calendar email={email} moodlogs={moodlogs} updateMoodLog={updateMoodLog} />
       <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />
-      <HappyRange onHappyRangeChange={handleHappyRangeChange} />
+      <label htmlFor="happyRange" className={`form-label mt-2 ${styles.moodlogquestionheader}`}>What is my happiness level for today?</label>
+      <HappyRangeSlider happinessLevel={happyRangeValue} onHappyRangeChange={handleHappyRangeChange}></HappyRangeSlider>
       <MostImpact onMostImpactChange={handleMostImpactChange} />
       <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-primary mb-2" onClick={handleSubmit}>Log my mood in!</button>
+        <button className="btn btn-primary mb-2" onClick={handleSubmit}>Log my mood in for today!</button>
       </div>
     </Layout>
   );
