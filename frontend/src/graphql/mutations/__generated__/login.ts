@@ -4,20 +4,20 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: login
+// GraphQL mutation operation: Login
 // ====================================================
 
-export interface login_login {
+export interface Login_login {
   __typename: "CommonResponse";
   message: string;
   extra: string | null;
 }
 
-export interface login {
-  login: login_login;
+export interface Login {
+  login: Login_login;
 }
 
-export interface loginVariables {
+export interface LoginVariables {
   email: string;
   password: string;
 }

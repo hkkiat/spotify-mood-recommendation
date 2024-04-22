@@ -2,30 +2,53 @@ const bcrypt = require('bcrypt');
 const { ApolloError } = require('apollo-server-express');
 const { saltRounds, jwtSecret, tokenExp } = require('../config');
 const { UserNotFound, PasswordNotMatch } = require('./errors');
+const jwt = require('jsonwebtoken');
+
+async function logout(_, __, { res }) {
+  res.clearCookie('_token');
+  return {
+    message: 'OK'
+  };
+}
 
 async function register(_, { email, password }, { db, res }) {
   try {
-    const hashedPassword = await hashPassword(password);
     // Check duplicate emails
     const userExists = await db.collection('users').findOne({ email });
     if (userExists) {
       throw new ApolloError('User with this email already exists, please login instead.');
     }
 
-    const user = await db.collection('users').insertOne({ email, password: hashedPassword });
-    logUserIn(user);
+    // Generate salt and hash password
+    const saltRounds = parseInt(process.env.SALT_ROUNDS, 10);
+    if (isNaN(saltRounds)) {
+      throw new Error("saltRounds must be a number");
+    }
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hash = await bcrypt.hash(password, salt);
 
+    // Store hash in your password DB.
+    const user = await db.collection('users').insertOne({ email, password: hash });
+
+    // Log user in (ensure this function is properly handling async operations)
+    await logUserIn(user, res);
+
+    // Return a valid result that is not null
     return {
       message: 'OK'
     };
+
   } catch (error) {
     throw new ApolloError('Failed to register: ' + error.message);
   }
 }
 
+
+
 async function login(_, { email, password }, { db, res }) {
   try {
     const user = await db.collection('users').findOne({ email });
+    console.log("Check user ", user)
     if (!user) {
       throw new ApolloError(UserNotFound);
     }
@@ -35,7 +58,7 @@ async function login(_, { email, password }, { db, res }) {
       throw new ApolloError(PasswordNotMatch);
     }
 
-    logUserIn(user)
+    logUserIn(user, res);
 
     return {
       message: 'OK'
@@ -45,37 +68,37 @@ async function login(_, { email, password }, { db, res }) {
   }
 }
 
-async function hashPassword(password) {
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-  return hashedPassword;
-}
+
+
+
 
 async function verifyPassword(password, hashedPassword) {
-  const match = await bcrypt.compare(password, hashedPassword);
-  return match;
+  console.log("hashedPassword: ", hashedPassword)
+  console.log("password: ", password)
+  try {
+    const match = await bcrypt.compare(password, hashedPassword);
+    return match
+  } catch (error) {
+    throw new ApolloError('Failed to verify password: ' + error.message);
+  }
 }
 
-function logUserIn(user) {
+function logUserIn(user, res) {
   const token = generateToken(user);
   setCookie(res, token);
 }
 
 function generateToken(user) {
-  const sessionHash = { id: user._id, email: user.email };
+  const sessionHash = { id: user._id, email: user.email, iat: Date.now() };
   const token = jwt.sign(sessionHash, jwtSecret, {
-    expiresIn: tokenExp,
+    expiresIn: '60m',
   });
   return token;
 }
 
 function setCookie(res, token) {
-  // TO-DO: Implement setting of JWT token in the cookie
-  res.cookie('_token', token, {
-    httpOnly: true,
-    secure: true,
-    maxAge: tokenExp * 1000,
-  });
+  res.header('Set-Cookie', `_token=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${tokenExp * 1000};`);
 }
 
 
-module.exports = { login, register };
+module.exports = { login, register, logout };

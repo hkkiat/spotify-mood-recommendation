@@ -4,20 +4,15 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: Register
+// GraphQL mutation operation: Logout
 // ====================================================
 
-export interface Register_register {
+export interface Logout_logout {
   __typename: "CommonResponse";
   message: string;
   extra: string | null;
 }
 
-export interface Register {
-  register: Register_register;
-}
-
-export interface RegisterVariables {
-  email: string;
-  password: string;
+export interface Logout {
+  logout: Logout_logout;
 }

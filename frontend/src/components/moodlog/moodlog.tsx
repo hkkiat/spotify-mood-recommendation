@@ -4,11 +4,12 @@ import OverallFeeling from './overallfeeling';
 import HappyRange from './happyrange';
 import MostImpact from './mostimpact';
 import Calendar from './calendar';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery }  from '@apollo/react-hooks';
 import { getAllMoodLogsQuery } from '../../graphql/queries/MoodLogQueries';
 import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/__generated__/getAllMoodLogs';
 import { createMoodLog, createMoodLogVariables } from '../../graphql/mutations/__generated__/createMoodLog';
 import { createMoodLogMutation } from '../../graphql/mutations/MoodLogMutations';
+import { defaultClient } from '../../Client';
 
 interface MoodLogProps {
   email: string;
@@ -33,6 +34,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
       getAllMoodLogsQuery,
       {
+        //client: defaultClient,
         variables: { email: email },
       }
     );
@@ -41,6 +43,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     useMutation<createMoodLog, createMoodLogVariables>(
       createMoodLogMutation,
       {
+        //client: defaultClient,
         variables: {
           moodlog: {
             email: email,

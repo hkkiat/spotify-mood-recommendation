@@ -1,7 +1,7 @@
 import { gql } from 'apollo-boost';
 
  export const login = gql`
-   mutation login($email: String!, $password: String!) {
+   mutation Login($email: String!, $password: String!) {
      login(email: $email, password: $password) {
        message
        extra
@@ -10,8 +10,17 @@ import { gql } from 'apollo-boost';
  `;
 
  export const register = gql`
-    mutation register($email: String!, $password: String!) {
+    mutation Register($email: String!, $password: String!) {
       register(email: $email, password: $password) {
+        message
+        extra
+      }
+    }
+  `;
+
+  export const logout = gql`
+    mutation Logout {
+      logout {
         message
         extra
       }

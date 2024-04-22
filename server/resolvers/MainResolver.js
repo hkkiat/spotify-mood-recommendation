@@ -1,6 +1,6 @@
 const { Kind } = require('graphql/language');
 const { GraphQLScalarType } = require('graphql');
-const { login, register } = require('./SessionControlResolver');
+const { login, register, logout } = require('./SessionControlResolver');
 const { getAllMoodLogs, getExistingMoodLog, createMoodLog, updateMoodLog } = require('./MoodlogResolver');
 const { authorize, refreshAccessToken, createPlaylistBasedOnFavorites } = require('./SpotifyResolver');
 
@@ -36,6 +36,7 @@ const resolvers = {
     /*Q4. Make an entry for blacklistTraveller resolver here*/
     login,
     register,
+    logout,
     authorize,
     refreshAccessToken,
     createPlaylistBasedOnFavorites,

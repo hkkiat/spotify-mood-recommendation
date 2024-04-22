@@ -16,8 +16,9 @@ const path = require('path');
 
 const verifyTokenMiddleware = (req, res, next) => {
   let token;
-  console.log("Check request body", req.body)
-  const bypassOperations = ["login", "register", "IntrospectionQuery"]
+  console.log("Check request cookies", req.cookies)
+
+  const bypassOperations = ["Login", "Register", "IntrospectionQuery"]
   if (req.body) {
     if (req.body.operationName) {
       if (bypassOperations.includes(req.body.operationName)) {
@@ -51,7 +52,8 @@ const server = new ApolloServer({
   resolvers,
   context: async ({ req, res }) => ({
     db: await connectToDb(),
-    res
+    res,
+    req
   }),
   formatError: error => {
     console.log(error);
@@ -62,7 +64,14 @@ const server = new ApolloServer({
 const app = express();
 //app.use(express.static('public'));
 // Enable CORS for all routes
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:3000', // This should match the URL of your frontend application
+  credentials: true, // This is required if your frontend sends credentials like cookies
+  optionsSuccessStatus: 200, // Some legacy browsers choke on status 204
+  methods: "GET,POST,OPTIONS",
+  allowedHeaders: "Content-Type,Authorization,Cookie",
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser()); // Make sure to use cookieParser before your custom middleware if you're using cookies
 
@@ -70,8 +79,19 @@ app.use(cookieParser()); // Make sure to use cookieParser before your custom mid
   try {
     await server.start();
     app.use('/graphql', verifyTokenMiddleware);
-    server.applyMiddleware({ app, path: '/graphql' });
+    server.applyMiddleware({
+      app,
+      path: '/graphql',
+      cors: false,
+    });
+    //app.use((err, req, res, next) => {
+    //  // Ensure CORS headers are set for error responses
+    //  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    //  res.header('Access-Control-Allow-Credentials', 'true');
+    //  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    //  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
 
+    //});
   } catch (err) {
     console.log('ERROR:', err);
   }

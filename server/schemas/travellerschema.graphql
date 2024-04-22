@@ -73,4 +73,5 @@ type Mutation {
   createPlaylistBasedOnFavorites(userId: String!, moodvalue: Float!): Playlist!
   login(email: String!, password: String!): CommonResponse!
   register(email: String!, password: String!): CommonResponse!
+  logout: CommonResponse!
 }
