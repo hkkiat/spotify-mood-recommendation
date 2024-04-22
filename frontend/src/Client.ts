@@ -5,9 +5,10 @@ import * as configs from './configs';
 import { createHttpLink } from 'apollo-link-http';
 
 const httpLink = createHttpLink({
-  //credentials: 'include',
+  credentials: 'include',
   uri: `${configs.clientBackendApiUrl}/graphql`,
 });
+
 
 const cache = new InMemoryCache({
   dataIdFromObject: (object) => {
@@ -29,5 +30,5 @@ const defaultOptions: any = {
 export const defaultClient = new ApolloClient({
   cache,
   defaultOptions,
-  link: ApolloLink.from([httpLink]),
+  link: httpLink,
 });

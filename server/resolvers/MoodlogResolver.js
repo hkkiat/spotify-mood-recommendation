@@ -1,10 +1,10 @@
 // THIS FILE CONTAINS THE QUERIES & MUTATIONS FOR MOOD LOGGING FEATURE
 
-async function getAllMoodLogs(_, { email }, { db }) {
+async function getAllMoodLogs(_, { email }, { db, req }) {
   /*
   Function to extract all moodlogs belonging to the user based on email address
   */
-
+  console.log("Check req: ", req)
   try {
     console.log("Extracting all mood logs for... ", email)
     // Assuming db.collection('moodlog') retrieves mood logs from your database
@@ -106,4 +106,4 @@ async function updateMoodLog(_, { moodlog }, { db }) {
   }
 }
 
-module.exports = { getAllMoodLogs, getExistingMoodLog, createMoodLog, updateMoodLog};
+module.exports = { getAllMoodLogs, getExistingMoodLog, createMoodLog, updateMoodLog };

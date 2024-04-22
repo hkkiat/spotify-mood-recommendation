@@ -1,24 +1,11 @@
 scalar GraphQLDate
 
-type Ticket {
-	_id: ID!
-	id: Int!
-	name: String!
-	phone: Int!
-	gender: String!
-	isMember: String!
-	bookingTime: GraphQLDate!
-}
-
-input InputTicket {
-	name: String!
-	phone: Int!
-	gender: String!
-	isMember: String!
-	bookingTime: GraphQLDate!
-}
-
 # TYPES FOR MOODLOG
+
+type CommonResponse {
+  message: String!
+  extra: String
+}
 
 type MoodLog {
   _id: ID!
@@ -68,28 +55,23 @@ type Playlist {
 
 
 type Query {
-	# Query to retrieve all moodlogs for person
+  # Query to retrieve all moodlogs for person
   getAllMoodLogs(email: String!): [MoodLog]
+  	# Query to retrieve all moodlogs for person
   getExistingMoodLog(email: String!, date: GraphQLDate!): MoodLog
-	listTravellers:[Ticket]!
-	findBlackListTraveller(
-		travellername: String,
-		travellerphone: Int): Boolean!
 	getUserFavorites(userId: String!): [Artist]
+
 }
 
 type Mutation {
 	# Mutation to create a day's moodlog for person
 	createMoodLog(moodlog: InputMoodLog!): MoodLog
   updateMoodLog(moodlog: InputMoodLog!): MoodLog
-	addTraveller(ticket: InputTicket!): Ticket!
-	deleteTraveller(travellername: String!): Boolean!
-	blacklistTravellerName(travellername: String!): Boolean
-	blacklistTravellerPhone(travellerphone: Int!): Boolean
 	# Spotify mutations
 	authorize(code: String!): AuthData
-  	refreshAccessToken(userId: String!): AuthData
-  	createPlaylistBasedOnFavorites(userId: String!, moodvalue: Float!): Playlist!
+  refreshAccessToken(userId: String!): AuthData
+  createPlaylistBasedOnFavorites(userId: String!, moodvalue: Float!): Playlist!
+  login(email: String!, password: String!): CommonResponse!
+  register(email: String!, password: String!): CommonResponse!
+  logout: CommonResponse!
 }
-
-

@@ -1,0 +1,29 @@
+version: '3.3'
+services:
+  frontend:
+    build: 
+      context: ../frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/../frontend:/usr/src/app:z
+      - ${PWD}/../frontend/node_modules:/usr/src/app/node_modules:z
+    ports:
+      - "3000:3000"
+  server:
+    build: 
+      context: ../server
+      dockerfile: Dockerfile
+    env_file:
+      - .env.server
+    volumes:
+      - ${PWD}/../server:/usr/src/app:z
+      - ${PWD}/../server/node_modules:/usr/src/app/node_modules:z
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo-db
+  mongo-db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    
