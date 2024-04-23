@@ -375,10 +375,6 @@ const Calendar: FC<CalendarProps> = ({ email, moodlogs, updateMoodLog }) => {
         prepareCalendarArray(email, date, moodlogsOriginalData);
     };
 
-    const updateMoodlogsData = (updatedMoodlogsData: DailyMoodLog[]) => {
-        setMoodlogsOriginalData(updatedMoodlogsData);
-    };
-
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-sg">
             <DateCalendar

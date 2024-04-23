@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import { useState, useEffect } from 'react';
 import './css/App.css';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import HomePage from './components/homepage';
@@ -8,6 +8,7 @@ import Login from './components/session/LoginPage';
 import RegisterPage from './components/session/RegisterPage';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { defaultClient } from './Client';
+import Discover from './components/discover/discover';
 
 function App() {
   // Use state to manage currentPage
@@ -17,7 +18,7 @@ function App() {
   const location = useLocation();
 
   // Update currentPage state based on current pathname found from location object
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(location.pathname);
   }, [location]);
 
@@ -29,6 +30,8 @@ function App() {
           <Route path={'register'} element={<RegisterPage/>} />
           <Route path='/home' element={<HomePage currentPage={currentPage} email='example@example.com'/>} />
           <Route path='/moodlog' element={<MoodLog currentPage={currentPage} email='example@example.com' />} />
+          <Route path='/discover' element={<Discover currentPage={currentPage} email='example@example.com' />} />
+
         </Routes>
       </ApolloProvider>
     </div>

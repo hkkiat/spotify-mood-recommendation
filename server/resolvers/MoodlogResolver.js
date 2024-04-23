@@ -8,7 +8,7 @@ async function getAllMoodLogs(_, { email }, { db, req }) {
   try {
     console.log("Extracting all mood logs for... ", req.email)
     // Assuming db.collection('moodlog') retrieves mood logs from your database
-    const moodLogs = await db.collection('moodlog').find({ email: req.email }).toArray();
+    const moodLogs = await db.collection('moodlog').find({ email: req.email }).sort({ logdatetime: 1 }).toArray();
     return moodLogs;
   } catch (error) {
     console.error('Error fetching mood logs:', error);
