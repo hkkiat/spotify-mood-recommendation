@@ -4,11 +4,11 @@ async function getAllMoodLogs(_, { email }, { db, req }) {
   /*
   Function to extract all moodlogs belonging to the user based on email address
   */
-  console.log("Check req: ", req)
+  console.log("Check req email: ", req.email)
   try {
-    console.log("Extracting all mood logs for... ", email)
+    console.log("Extracting all mood logs for... ", req.email)
     // Assuming db.collection('moodlog') retrieves mood logs from your database
-    const moodLogs = await db.collection('moodlog').find({ email: email }).sort({ logdatetime: 1 }).toArray();
+    const moodLogs = await db.collection('moodlog').find({ email: req.email }).sort({ logdatetime: 1 }).toArray();
     return moodLogs;
   } catch (error) {
     console.error('Error fetching mood logs:', error);
@@ -18,12 +18,15 @@ async function getAllMoodLogs(_, { email }, { db, req }) {
   /*End of Q2*/
 }
 
-async function createMoodLog(_, { moodlog }, { db }) {
+async function createMoodLog(_, { moodlog }, { db, req }) {
   /* 
   Function to update moodlog if it exists, otherwise creates a new moodlog entry
   */
   try {
-    let updatedMoodLog = await updateMoodLog(_, { moodlog }, { db });
+    console.log("Check req.email: ", req.email)
+    moodlog.email = req.email
+    let updatedMoodLog = await updateMoodLog(_, { moodlog }, { db, req });
+
 
     // If the update succeeds, return the updated mood log
     if (updatedMoodLog) {
@@ -46,12 +49,12 @@ async function createMoodLog(_, { moodlog }, { db }) {
   }
 }
 
-async function getExistingMoodLog(_, { email, date }, { db }) {
+async function getExistingMoodLog(_, { email, date }, { db, req }) {
   /* 
   Function to search for existing moodlog on the same day, returns if found
   */
   try {
-    console.log(`Finding particular moodlog for user: ${email} on date: ${date}`)
+    console.log(`Finding particular moodlog for user: ${req.email} on date: ${date}`)
     const collection = db.collection('moodlog');
 
     const startDate = new Date(date);
@@ -64,7 +67,7 @@ async function getExistingMoodLog(_, { email, date }, { db }) {
 
     // Insert the moodlog into the database
     const result = await collection.findOne({
-      email: email,
+      email: req.email,
       logdatetime: {
         $gte: startDate, // Start date
         $lt: endDate    // End date (exclusive)
@@ -76,7 +79,7 @@ async function getExistingMoodLog(_, { email, date }, { db }) {
   }
 }
 
-async function updateMoodLog(_, { moodlog }, { db }) {
+async function updateMoodLog(_, { moodlog }, { db, req }) {
   /*
   Function to search for existing moodlog on the same day, updates it if it exists 
   */
@@ -84,7 +87,7 @@ async function updateMoodLog(_, { moodlog }, { db }) {
     console.log(`Updating moodlog...`, moodlog);
 
     // Find the existing mood log in the database
-    const existingMoodLog = await getExistingMoodLog(_, { email: moodlog.email, date: moodlog.logdatetime }, { db });
+    const existingMoodLog = await getExistingMoodLog(_, { email: req.email, date: moodlog.logdatetime }, { db, req });
 
     // If an existing mood log is found, update it; otherwise, throw an error
     if (existingMoodLog) {

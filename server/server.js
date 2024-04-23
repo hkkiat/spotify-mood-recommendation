@@ -40,7 +40,8 @@ const verifyTokenMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, jwtSecret);
-    req.userId = decoded.id;
+    req.userId = decoded.userId;
+    req.email = decoded.email;
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }
