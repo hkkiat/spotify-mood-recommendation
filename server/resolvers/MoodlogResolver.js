@@ -23,7 +23,10 @@ async function createMoodLog(_, { moodlog }, { db, req }) {
   Function to update moodlog if it exists, otherwise creates a new moodlog entry
   */
   try {
-    let updatedMoodLog = await updateMoodLog(_, { moodlog }, { db });
+    console.log("Check req.email: ", req.email)
+    moodlog.email = req.email
+    let updatedMoodLog = await updateMoodLog(_, { moodlog }, { db, req });
+
 
     // If the update succeeds, return the updated mood log
     if (updatedMoodLog) {
@@ -84,7 +87,7 @@ async function updateMoodLog(_, { moodlog }, { db, req }) {
     console.log(`Updating moodlog...`, moodlog);
 
     // Find the existing mood log in the database
-    const existingMoodLog = await getExistingMoodLog(_, { email: req.email, date: moodlog.logdatetime }, { db });
+    const existingMoodLog = await getExistingMoodLog(_, { email: req.email, date: moodlog.logdatetime }, { db, req });
 
     // If an existing mood log is found, update it; otherwise, throw an error
     if (existingMoodLog) {
