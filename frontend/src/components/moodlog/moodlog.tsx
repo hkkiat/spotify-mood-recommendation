@@ -4,11 +4,14 @@ import OverallFeeling from './overallfeeling';
 import HappyRange from './happyrange';
 import MostImpact from './mostimpact';
 import Calendar from './calendar';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery }  from '@apollo/react-hooks';
 import { getAllMoodLogsQuery } from '../../graphql/queries/MoodLogQueries';
 import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/__generated__/getAllMoodLogs';
 import { createMoodLog, createMoodLogVariables } from '../../graphql/mutations/__generated__/createMoodLog';
 import { createMoodLogMutation } from '../../graphql/mutations/MoodLogMutations';
+import { defaultClient } from '../../Client';
+import HappyRangeSlider from './happyrangeslider';
+import styles from '../../css/moodlog.module.css'
 
 interface MoodLogProps {
   email: string;
@@ -33,6 +36,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
       getAllMoodLogsQuery,
       {
+        //client: defaultClient,
         variables: { email: email },
       }
     );
@@ -41,6 +45,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     useMutation<createMoodLog, createMoodLogVariables>(
       createMoodLogMutation,
       {
+        //client: defaultClient,
         variables: {
           moodlog: {
             email: email,
@@ -62,7 +67,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   }, [moodLogsData]);
 
   // Handle calendar mood log change
-  const updateMoodLog = (updatedMoodLog: DailyMoodLogInputFromCalendar) => {
+  const updateMoodLog = async (updatedMoodLog: DailyMoodLogInputFromCalendar) => {
     const moodLogInput = {
       email: email,
       logdatetime: updatedMoodLog.logdatetime,
@@ -70,8 +75,26 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
       happinesslevel: updatedMoodLog.happinesslevel,
       mostimpact: updatedMoodLog.mostimpact,
     }
-    // TO DO - use gql update function
-    console.log("moodLogInput passed from calendar component:", moodLogInput);
+    
+    console.log("moodLogInput passed from calendar component to gql:", moodLogInput);
+
+    try {
+      // Invoke the mutation function to create a mood log
+      const { data } = await createMoodLogMutationFn({
+        variables: {
+          moodlog: moodLogInput,
+        },
+      });
+  
+      // If the mood log is created successfully
+      if (data && data.createMoodLog) {
+        // Update the mood logs state with the newly created mood log
+        setMoodLogs(prevMoodLogs => [...prevMoodLogs, data.createMoodLog]);
+        console.log('Mood log data updated: ', data.createMoodLog);
+      }
+    } catch (error) {
+      console.error("Error occurred while creating mood log:", error);
+    }
   };
 
   // Handle text change
@@ -123,10 +146,11 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     <Layout currentPage={currentPage}>
       <Calendar email={email} moodlogs={moodlogs} updateMoodLog={updateMoodLog} />
       <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />
-      <HappyRange onHappyRangeChange={handleHappyRangeChange} />
+      <label htmlFor="happyRange" className={`form-label mt-2 ${styles.moodlogquestionheader}`}>What is my happiness level for today?</label>
+      <HappyRangeSlider happinessLevel={happyRangeValue} onHappyRangeChange={handleHappyRangeChange}></HappyRangeSlider>
       <MostImpact onMostImpactChange={handleMostImpactChange} />
       <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-primary mb-2" onClick={handleSubmit}>Log my mood in!</button>
+        <button className="btn btn-primary mb-2" onClick={handleSubmit}>Log my mood in for today!</button>
       </div>
     </Layout>
   );

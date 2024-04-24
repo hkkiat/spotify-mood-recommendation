@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, ChangeEvent, FC } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/en-sg';
-import Badge from '@mui/material/Badge';
-import TextField from '@mui/material/TextField';
+import Badge from '@mui/material/Badge'; 
+import TextField from '@mui/material/TextField'; 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -19,7 +19,7 @@ import { PiStudentFill } from "react-icons/pi";
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select'; 
 import styles from '../../css/moodlog.module.css'
 import HappyRangeSlider from './happyrangeslider';
 import Button from '@mui/material/Button';
@@ -373,10 +373,6 @@ const Calendar: FC<CalendarProps> = ({ email, moodlogs, updateMoodLog }) => {
         setIsLoading(true);
         setHighlightedDays([]);
         prepareCalendarArray(email, date, moodlogsOriginalData);
-    };
-
-    const updateMoodlogsData = (updatedMoodlogsData: DailyMoodLog[]) => {
-        setMoodlogsOriginalData(updatedMoodlogsData);
     };
 
     return (
