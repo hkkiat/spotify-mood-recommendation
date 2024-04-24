@@ -26,6 +26,7 @@
     "apollo": "^2.34.0",
     "apollo-boost": "^0.4.9",
     "apollo-client": "^2.6.10",
+    "axios": "^1.6.8",
     "babel-jest": "^27.4.2",
     "babel-loader": "^8.2.3",
     "babel-plugin-named-asset-import": "^0.3.8",

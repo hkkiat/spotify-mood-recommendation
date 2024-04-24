@@ -4,6 +4,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import HomePage from './components/homepage';
 import TicketToRide from './components/TicketToRide';
 import MoodLog from './components/moodlog/moodlog';
+import Recommendation from './components/recommend/recommend';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path='/home' element={<HomePage currentPage={currentPage} email='example@example.com'/>} />
         {/* <Route path='/ticket' element={<TicketToRide />} /> */}
         <Route path='/moodlog' element={<MoodLog currentPage={currentPage} email='example@example.com' />} />
+        <Route path='/recommend' element={<Recommendation currentPage={currentPage} email='example@example.com' />} />
       </Routes>
     </div>
   );

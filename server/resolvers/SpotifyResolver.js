@@ -2,22 +2,26 @@
 // require('dotenv').config({ path: '../spotify.env' });
 
 const fetch = require('node-fetch');
-const SpotifyWebApi = require('spotify-web-api-node');
+// const SpotifyWebApi = require('spotify-web-api-node');
 
-// Set up the Spotify API client
-const spotifyApi = new SpotifyWebApi({
-  clientId: process.env.SPOTIFY_CLIENT_ID,
-  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-  redirectUri: process.env.REDIRECT_URI, 
+// // Set up the Spotify API client
+// const spotifyApi = new SpotifyWebApi({
+//   clientId: process.env.SPOTIFY_CLIENT_ID,
+//   clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+//   redirectUri: process.env.REDIRECT_URI, 
 
-});
+// });
+
+const spotifyApi = require('../spotifyConfig');
+const express = require('express');
+const router = express.Router();
 
 // Get user token for the first time and store in db
 // Save user token to db
 async function saveUserTokens(_, {userId, accessToken, refreshToken, expiresAt}, {db}) {
-  console.log(accessToken)
-  console.log(refreshToken)
-  console.log(expiresAt)
+  // console.log(accessToken)
+  // console.log(refreshToken)
+  // console.log(expiresAt)
   await db.collection('spotifyUser').updateOne(
     { userId },
     { $set: { accessToken, refreshToken, expiresAt } },
@@ -30,7 +34,7 @@ async function getUserAccessToken(_, {userId}, { db }) {
   const userRecord = await db.collection('spotifyUser').findOne({ userId: userId });
   
   if (!userRecord) {
-    throw new Error(`User with ID ${userId} not found.`);
+    return null;
   }
 
   const { accessToken, expiresAt, refreshToken } = userRecord;
@@ -50,7 +54,7 @@ async function getUserAccessToken(_, {userId}, { db }) {
 // Helper Function: Fetch top artists of a user or top global artists if none are found
 async function fetchUserTopArtists(accessToken) {
   spotifyApi.setAccessToken(accessToken);
-  const result = await spotifyApi.getMyTopArtists({ limit: 30 });
+  const result = await spotifyApi.getMyTopArtists({ limit: 50 });
   return result.body.items.map(artist => artist.id);
 }
 
@@ -70,7 +74,7 @@ async function fetchTopTracksForArtists(artistIds, accessToken) {
 // Helper Function: Fetch audio features for the tracks
 async function fetchTracksAudioFeatures(trackIds, accessToken) {
   spotifyApi.setAccessToken(accessToken);
-  const MAX_TRACKS_PER_REQUEST = 100; // Adjust based on Spotify's limits
+  const MAX_TRACKS_PER_REQUEST = 50; // Adjust based on Spotify's limits
   let allAudioFeatures = [];
 
   // Split trackIds into batches
@@ -85,19 +89,26 @@ async function fetchTracksAudioFeatures(trackIds, accessToken) {
 
 // Helper Function: Filter and sort tracks based on mood criteria
 function selectTracksBasedOnCriteria(tracksWithFeatures, moodvalue) {
-  const tolerance = 0.2; // Tolerance for matching mood criteria
+  const tolerance = 0.15; // Tolerance for matching mood criteria
   // Calculate target features based on moodvalue
   const valenceTarget = moodvalue;  
-  const danceabilityTarget = Math.min(moodvalue + 0.2, 1.0);
-  const energyTarget = Math.min(moodvalue + 0.2, 1.0);
-
+  const danceabilityTarget = Math.min(moodvalue + 0.25, 1.0);
+  const energyTarget = Math.min(moodvalue + 0.25, 1.0);
+  console.log("valenceTarget: ", valenceTarget)
+  console.log("danceabilityTarget", danceabilityTarget)
+  console.log("energyTarget", energyTarget)
   // Filter tracks within a tolerance range of the target mood features
   let filteredTracks = tracksWithFeatures.filter(track => 
-    track.valence >= valenceTarget - tolerance && track.valence <= valenceTarget + tolerance &&
-    track.danceability >= danceabilityTarget - tolerance && track.danceability <= danceabilityTarget + tolerance &&
-    track.energy >= energyTarget - tolerance && track.energy <= energyTarget + tolerance
+    track && // Ensure the track object itself is not null
+    track.valence !== undefined && 
+    track.danceability !== undefined && 
+    track.energy !== undefined &&
+    track.valence >= valenceTarget - tolerance && track.valence <= 1.0 &&
+    track.danceability >= danceabilityTarget - tolerance && track.danceability <= 1.0 &&
+    track.energy >= energyTarget - tolerance && track.energy <= 1.0
   );
-
+  console.log("Tracks before filtering:", tracksWithFeatures.length);
+  console.log("Filtered tracks:", filteredTracks.length);
   // Shuffle the filtered tracks to add randomness
   shuffleArray(filteredTracks);
 
@@ -192,7 +203,7 @@ async function authorize(_, { code }, { db }) {
   const me = await spotifyApi.getMe();
   const userId = me.body.id;
   const expires_at = new Date(new Date().getTime() + expires_in * 1000);
-  console.log(userId, access_token, refresh_token, expires_at)
+  // console.log(userId, access_token, refresh_token, expires_at)
 
   await saveUserTokens(null, {userId, accessToken: access_token, refreshToken: refresh_token, expiresAt: expires_at}, {db});
 
@@ -243,7 +254,10 @@ async function refreshAccessToken(_, { userId }, { db }) {
 async function createPlaylistBasedOnFavorites(_, { userId, moodvalue }, { db }) {
   try {
     const accessToken = await getUserAccessToken(null, {userId}, { db });
-    console.log(accessToken)
+    if (!accessToken) {
+      throw new Error(`User with ID ${userId} not found.`);
+    }
+    console.log("creating playlist", accessToken)
     spotifyApi.setAccessToken(accessToken);
 
     const topArtists = await fetchUserTopArtists(accessToken);
@@ -254,14 +268,14 @@ async function createPlaylistBasedOnFavorites(_, { userId, moodvalue }, { db }) 
     // console.log(trackIds)
     let tracksWithFeatures = await fetchTracksAudioFeatures(trackIds, accessToken);
     // console.log('tracksWithFeatures')
-    // console.log(tracksWithFeatures)
+    console.log(tracksWithFeatures[-1])
     // Filter and sort tracks based on criteria
     const selectedTracks = selectTracksBasedOnCriteria(tracksWithFeatures, moodvalue);
-    console.log('selectedTracks')
-    console.log(selectedTracks)
+    // console.log('selectedTracks')
+    // console.log(selectedTracks)
     // Create playlist and add tracks
     const playlist = await createSpotifyPlaylist(userId, "Generated Playlist", selectedTracks, accessToken);
-    console.log('playlist')
+    // console.log('playlist')
     console.log(playlist)
     return formatPlaylistResponse(playlist, selectedTracks);
   } catch (error) {
@@ -270,8 +284,80 @@ async function createPlaylistBasedOnFavorites(_, { userId, moodvalue }, { db }) 
   }
 }
 
+// Express route handlers
+router.get('/check-authorization', async (req, res) => {
+  try {
+      const userId = 'cometohk'; // This should ideally come from a secure source like session or authenticated request
+      const accessToken = await getUserAccessToken(null, { userId }, { db: req.db });
+      if (!accessToken) {
+        // User not found or no valid token available
+        res.json({ isAuthorized: false });
+      } else {
+        // User found and token is valid
+        res.json({ isAuthorized: true });
+      }
+  } catch (error) {
+      res.status(500).send(error.message);
+  }
+});
+
+router.get('/auth-url', (req, res) => {
+  const scopes = ['user-follow-read', 'user-top-read', 'playlist-modify-private', 'playlist-modify-public', 'user-read-private'];
+  const state = 'OPTIONAL_STATE';
+  const authorizeUrl = spotifyApi.createAuthorizeURL(scopes, state);
+  res.json({ url: authorizeUrl });
+});
+
+router.get('/callback', async (req, res) => {
+  const { code, state } = req.query;
+  if (!code) {
+    console.log("No code received in the callback");
+    return res.redirect('/#error');  // Use a proper UI route or error handling mechanism
+  }
+  try {
+      // Use the authorize function directly here
+      const authorizationResult = await authorize(null, { code }, { db: req.db });
+      console.log("Authorization success:", authorizationResult);
+      res.redirect('http://localhost:3000/recommend?authorized=true');
+  } catch (error) {
+      console.error('Error during authorization:', error);
+      res.redirect('/#error');
+  }
+});
+// router.get('/callback', async (req, res) => {
+//   const { code } = req.query;
+//   try {
+//       const data = await spotifyApi.authorizationCodeGrant(code);
+//       console.log("Authorization success:", data.body);
+//       res.redirect('/#authorized');
+//   } catch (error) {
+//       console.error('Error during authorization:', error);
+//       res.redirect('/#error');
+//   }
+// });
+
+router.post('/create-playlist', async (req, res) => {
+  const { userId, moodvalue } = req.body; // Ensure you securely authenticate and validate these inputs
+  try {
+      const playlist = await createPlaylistBasedOnFavorites(null, { userId, moodvalue }, { db: req.db });
+      res.json(playlist);
+  } catch (error) {
+      res.status(500).send('Failed to create playlist');
+  }
+});
+
+// Export all your handlers and functions
 module.exports = {
+  //for spotifyRoutes
+  getUserAccessToken,
+  saveUserTokens,
+  fetchTopTracksForArtists,
+  fetchTracksAudioFeatures,
+  fetchUserTopArtists,
+  selectTracksBasedOnCriteria,
+  formatPlaylistResponse,
   authorize,
   refreshAccessToken,
   createPlaylistBasedOnFavorites,
+  router  // Export the router for use in server.js or wherever needed
 };
