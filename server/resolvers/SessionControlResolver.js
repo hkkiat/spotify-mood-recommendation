@@ -28,8 +28,8 @@ async function register(_, { email, password }, { db, res }) {
     const hash = await bcrypt.hash(password, salt);
 
     // Store hash in your password DB.
-    const user = await db.collection('users').insertOne({ email, password: hash });
-
+    await db.collection('users').insertOne({ email, password: hash });
+    const user = await db.collection('users').findOne({ email });
     // Log user in (ensure this function is properly handling async operations)
     await logUserIn(user, res);
 
@@ -97,7 +97,8 @@ function generateToken(user) {
 }
 
 function setCookie(res, token) {
-  res.header('Set-Cookie', `_token=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${tokenExp * 1000};`);
+  const tokenBase64 = Buffer.from(token).toString('base64');
+  res.header('Set-Cookie', `_token=${tokenBase64}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${tokenExp * 1000};`);
 }
 
 
