@@ -40,7 +40,7 @@ async function getUserAccessToken(_, { email }, { db }) {
   }
 
   const { accessToken, expiresAt, refreshToken, userId } = userRecord;
-    
+      
   // Check if the access token has expired
   if (new Date() > new Date(expiresAt)) {
     // Access token has expired, refresh it
@@ -120,12 +120,12 @@ function selectTracksBasedOnCriteria(tracksWithFeatures, moodvalue) {
   // Calculate target features based on moodvalue
   let valenceTarget, danceabilityTarget, energyTarget;  // Declare variables outside the if-else blocks
 
-  if (moodvalue > 0.60) {
+  if (moodvalue + 0.1 > 0.60) {
     valenceTarget = 0.60;  
     danceabilityTarget = 0.60;
     energyTarget = 0.60;
   } else {
-    valenceTarget = moodvalue;  
+    valenceTarget = moodvalue + 0.1;  
     danceabilityTarget = moodvalue + 0.1;
     energyTarget = moodvalue + 0.1;
     console.log("valenceTarget: ", valenceTarget)
@@ -257,6 +257,7 @@ async function authorize(_, { code, email }, { db }) {
 async function refreshAccessToken(_, { email }, { db }) {
   // Retrieve the user's current refreshToken from the database
   const user = await db.collection('spotifyUser').findOne({ email: email });
+  console.log('refresh: ', user);
   if (!user) {
     throw new Error('User not found');
   }
@@ -267,15 +268,19 @@ async function refreshAccessToken(_, { email }, { db }) {
   try {
     // Refresh the token
     const data = await spotifyApi.refreshAccessToken();
+    console.log('refreshaccesstoken: ', data);
     const { access_token, expires_in } = data.body;
-    const user_id = userId;
+    console.log(access_token, expires_in)
+    const user_id = user.userId;
 
     // Calculate the new expiration date
     const expires_at = new Date(new Date().getTime() + expires_in * 1000);
 
+    console.log(email, user_id, access_token, user.refreshToken, expires_at);
+
     // Use the existing saveUserTokens function to save the new tokens
     await saveUserTokens(null, { email, userId: user_id, accessToken: access_token, refreshToken: user.refreshToken, expiresAt: expires_at }, { db });
-
+    console.log('accesstoken: ', accessToken)
     return {accessToken: access_token};
     // return access_token;
     // return {

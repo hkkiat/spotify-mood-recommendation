@@ -13,7 +13,7 @@ const SpotifyPlayer: React.FC<SpotifyPlayerProps> = ({ playlistId }) => {
 
   return (
     <div>
-      <h3>Your Spotify Playlist</h3>
+      {/* <h3>Your Spotify Playlist</h3> */}
       <iframe
         src={srcUrl}
         width="300"

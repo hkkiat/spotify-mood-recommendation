@@ -7,6 +7,7 @@ import { getAllMoodLogsQuery } from '../../graphql/queries/MoodLogQueries';
 import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/__generated__/getAllMoodLogs';
 import axios from 'axios';
 import SpotifyPlayer from './SpotifyPlayer'; // Corrected the import and capitalized the component name
+import SpotifyButton from './spotifybutton';
 import MoodStatsBox from './moodstatsbox';
 import styles from '../../css/recommend.module.css';
 // import DiscoverButton from './SpotifyButton';
@@ -200,8 +201,9 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
     if (storedMood) {
       setIsCreatingPlaylist(true);  // Set loading state to true
       console.log('Creating playlist with average mood:', storedMood);
+      const moodValue = JSON.parse(storedMood);
       try {
-        const response = await axios.post('http://localhost:8000/api/spotify/create-playlist', { moodvalue: storedMood }, { withCredentials: true });
+        const response = await axios.post('http://localhost:8000/api/spotify/create-playlist', { moodvalue: moodValue }, { withCredentials: true });
         if (response.data) {
           setPlaylistId(response.data.id);
           alert('Playlist created successfully!');
@@ -242,18 +244,17 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
   return (
     <Layout currentPage={currentPage}>
       <div>
-        <Calendar email={email} moodlogs={moodlogs} updateMoodLog={updateMoodLog} />
-        <div className="mood-stats-container">
-          <MoodStatsBox label="Average Mood" value={moodData.averageMood} />
-          <MoodStatsBox label="Highest Mood" value={moodData.highestMood} />
-          <MoodStatsBox label="Lowest Mood" value={moodData.lowestMood} />
-          <MoodStatsBox label="Number of Logs" value={moodData.numLogs} />
+        {/* <Calendar email={email} moodlogs={moodlogs} updateMoodLog={updateMoodLog} /> */}
+        <div className={styles.moodStatsContainer}>
+          <MoodStatsBox label="Number of Logs" value={moodData.numLogs} isInteger={true} enableHoverEffect={false} />
+          <MoodStatsBox label="Average Mood" value={moodData.averageMood} enableHoverEffect={true} />
+          <MoodStatsBox label="Highest Mood" value={moodData.highestMood} enableHoverEffect={true} />
+          <MoodStatsBox label="Lowest Mood" value={moodData.lowestMood} enableHoverEffect={true} />
         </div>
         <h2>Generate a Playlist Based on Your Weekly Mood</h2>
-        <button onClick={handleAuthorizeAndCreatePlaylist} disabled={isCreatingPlaylist}>
-          {isCreatingPlaylist ? 'Creating Playlist...' : 'Authorize & Create Playlist'}
-        </button>
-        {playlistId && <SpotifyPlayer playlistId={playlistId} />}
+        <div>         
+          <SpotifyButton onClick={checkAndHandleAuthorization} buttonText="Generate Spotify Playlist"/>
+        </div>
         {isCreatingPlaylist && (
           <div>
             <div className={styles.spinner}>
@@ -267,6 +268,11 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
           // //   <div className={styles.spinner}></div> Creating your playlist, please wait...
           // // </div> */}
         )}
+        {/* <button onClick={checkAndHandleAuthorization} disabled={isCreatingPlaylist}>
+          {isCreatingPlaylist ? 'Creating Playlist...' : 'Authorize & Create Playlist'}
+        </button> */}
+        {playlistId && <SpotifyPlayer playlistId={playlistId} />}
+        
         {/* <button onClick={handleAuthorizeAndCreatePlaylist}>
           Authorize & Create Playlist
         </button>

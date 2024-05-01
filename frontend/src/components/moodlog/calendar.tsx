@@ -135,11 +135,12 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
 
     const happinessLevelForColor = moodlogsModifiedDataForCalendar[props.day.date() - 1]?.happinesslevel; // Adjust index to match day
     const colorMap: Record<string, string> = {
-        '1': 'darkgreen',
+        '1': '#23DC35', //spring green
         '0.75': 'lightgreen',
         '0.5': 'lightgrey',
-        '0.25': 'orange',
-        '0': 'red',
+        '0.25': 'lightblue',
+        // '0': 'red',
+        '0': '#3B65C4'//not so dark blue
     };
     const backgroundColor = colorMap[happinessLevelForColor] || 'grey';
 
