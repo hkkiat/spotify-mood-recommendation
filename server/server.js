@@ -15,7 +15,7 @@ const path = require('path');
 
 
 const verifyTokenMiddleware = (req, res, next) => {
-  let token;
+  let tokenBase64;
   console.log("Check request cookies", req.cookies)
 
   const bypassOperations = ["Login", "Register", "IntrospectionQuery"]
@@ -31,17 +31,21 @@ const verifyTokenMiddleware = (req, res, next) => {
   }
 
   if (req.cookies && req.cookies._token) {
-    token = req.cookies._token;
+    tokenBase64 = req.cookies._token;
   }
 
-  if (!token) {
+  if (!tokenBase64) {
     return res.status(403).send("A token is required for authentication");
   }
 
   try {
+    const token = Buffer.from(tokenBase64, 'base64').toString('ascii');
     const decoded = jwt.verify(token, jwtSecret);
     req.userId = decoded.userId;
     req.email = decoded.email;
+
+    console.log("Decoded token email: ", decoded.email);
+
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }

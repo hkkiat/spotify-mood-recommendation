@@ -4,6 +4,7 @@ import UserProfile from './profile';
 import { BiHome, BiLogOut, BiChart, BiCommand, BiSearch } from 'react-icons/bi'; // Import icons
 import { logout } from '../../graphql/mutations/SessionControl';
 import { Logout } from '../../graphql/mutations/__generated__/Logout';
+import { useNavigate } from 'react-router-dom';
 
 
 /*
@@ -15,10 +16,12 @@ interface SideBarProps {
 }
 
 function Sidebar({ currentPage }: SideBarProps) {
+  const navigate = useNavigate();
+
   const [logoutUser] = useMutation<Logout>(logout,
     {
       onCompleted: () => {
-        window.location.href = '/';
+        navigate('/')
       }
     })
   
