@@ -12,6 +12,7 @@ const { jwtSecret } = require('./config');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const { router } = require('./resolvers/SpotifyResolver'); // Ensure path correctness
+const { isCompositeType } = require('graphql');
 
 const app = express();
 app.use(express.static('public'));
@@ -19,32 +20,65 @@ app.use(express.json());
 // new middleware to initialize database
 let db; // Variable to hold DB instance
 
-// Middleware to add db to each request
+// new middleware to initialize database
+// // Middleware to add db to each request
 app.use((req, res, next) => {
   req.db = db; // Attach db to request object
   next();
 });
-// new middleware to initialize database
-
 
 const verifyTokenMiddleware = (req, res, next) => {
   let token;
   console.log("Check request cookies", req.cookies)
+  // console.log(req)
 
   const bypassOperations = ["Login", "Register", "IntrospectionQuery"]
-  if (req.body) {
-    if (req.body.operationName) {
-      if (bypassOperations.includes(req.body.operationName)) {
-        return next();
-      }
-    } else {
-      // We skip authorization for the first handshake when there is no req body
-      return next()
-    }
+  const bypassPaths = ['/callback'];  // Ensure the path matches your route
+
+  if (bypassPaths.includes(req.path)) {
+    console.log(req.path)
+    return next();
   }
+  // const bypassPaths = ['/api/spotify/callback']
+
+  // if (bypassPaths.includes(req.path)) {
+  //   console.log('callback')
+  //   return next();  // Bypass token check
+  // }
+  // Check if there's an operation name and it's a bypass operation
+  else if (req.body && req.body.operationName && bypassOperations.includes(req.body.operationName)) {
+    console.log('Bypassing token check for operation: ', req.body.operationName);
+    return next();
+  }
+  else if (!req.body){
+    console.log('req no body: ', req.headers)
+    return next();
+  }
+  // else if (req.body && !req.body.operationName){
+  //   if (req.method === "GET" && !Object.keys(req.body || {}).length) {
+  //     console.log("empty body")
+  //   } else {
+  //     console.log(req.body);
+  //     return next();
+  //   }
+  // }
+
+
+  // if (req.body) {
+  //   if (req.body.operationName) {
+  //     if (bypassOperations.includes(req.body.operationName)) {
+  //       return next();
+  //     }
+  //   } else {
+  //     console.log(req.body, req.header)
+  //     // We skip authorization for the first handshake when there is no req body
+  //     return next()
+  //   }
+  // }
 
   if (req.cookies && req.cookies._token) {
     token = req.cookies._token;
+    console.log('running token: ', token)
   }
 
   if (!token) {
@@ -53,8 +87,10 @@ const verifyTokenMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, jwtSecret);
+    console.log("Decoded token:", decoded); // Verify the decoded token content
     req.userId = decoded.userId;
     req.email = decoded.email;
+    console.log("Email set in req:", req.email); // Check if email is correctly set
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }
@@ -86,19 +122,21 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 // Mount Spotify Routes
-app.use('/api/spotify', router); 
-app.use(express.json());
+// app.use(express.json());
 app.use(cookieParser()); // Make sure to use cookieParser before your custom middleware if you're using cookies
-
 (async function () {
   try {
     await server.start();
     app.use('/graphql', verifyTokenMiddleware);
+    // app.use('/api/spotify', verifyTokenMiddleware, router);
+    app.use('/api/spotify', verifyTokenMiddleware, router);  // Applying the verifyTokenMiddleware to Spotify routes
+
     server.applyMiddleware({
       app,
       path: '/graphql',
       cors: false,
     });
+
     //app.use((err, req, res, next) => {
     //  // Ensure CORS headers are set for error responses
     //  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -112,6 +150,11 @@ app.use(cookieParser()); // Make sure to use cookieParser before your custom mid
   }
 })();
 
+// app.use('/api/spotify', router);  // Applying the verifyTokenMiddleware to Spotify routes
+
+// app.use('/api/spotify', verifyTokenMiddleware, router);  // Applying the verifyTokenMiddleware to Spotify routes
+
+// app.use('/api/spotify', router); 
 
 (async function () {
   try {
