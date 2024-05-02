@@ -293,6 +293,89 @@ async function refreshAccessToken(_, { email }, { db }) {
   }
 }
 
+// Use Spotify's Recommendaton API to generate songs based on mood attribuets
+async function fetchRecommendations(seedArtists, moodValue, accessToken) {
+  console.log('fetchRecommendations')
+  console.log('seedArtists: ', seedArtists)
+  console.log('moodvalue: ', moodValue)
+  console.log('accesstoken: ', accessToken)
+  spotifyApi.setAccessToken(accessToken);
+  try {
+      const tolerance = 1.25;
+      const result = await spotifyApi.getRecommendations({
+          seed_artists: seedArtists,
+          min_valence: Math.min(moodValue*1.2, 1.0),
+          max_valence: 1.0,
+          // min_danceability: moodValue,
+          // max_danceability: Math.min(moodValue * tolerance, 1.0),
+          // min_energy: moodValue, 
+          // max_energy: Math.min(moodValue * tolerance, 1.0),
+
+          // target_valence: moodAttributes.valence,
+          // target_danceability: moodAttributes.danceability,
+          // target_energy: moodAttributes.energy,
+          limit: 12
+      });
+      return result.body.tracks.map(track => track.id);
+  } catch (error) {
+      console.error("Failed to fetch recommendations:", error);
+      throw error;
+  }
+}
+
+// Create a playlist based on Spotify Recommendation API call
+async function createPlaylistBasedOnFavoritesRec(_, { email, moodvalue }, { db }) {
+  try {
+      console.log('createplaylistrec')
+      const user = await db.collection('spotifyUser').findOne({ email: email });
+      console.log('user: ', user)
+      const accessToken = user.accessToken;
+      const userId = user.userId;
+
+      if (!accessToken) {
+          throw new Error(`User with ID ${userId} not found.`);
+      }
+      console.log("creating playlist", accessToken)
+      spotifyApi.setAccessToken(accessToken);
+
+      const topArtists = await fetchUserTopArtists(accessToken);
+      console.log('topArtists: ', topArtists);
+      const shuffledArtists = shuffleArray([...topArtists]); // Clone to avoid mutating the original array
+      console.log('shuffledArtists: ', shuffledArtists);
+      const seedArtists = shuffledArtists.filter(id => id !== null).slice(0, 5); // Remove any undefined IDs
+      // const seedArtists = topArtists.sort(() => 0.5 - Math.random()).slice(0, 5).map(artist => artist.id);
+      console.log('seedArtists: ', seedArtists);
+      // const moodAttributes = {
+      //     valence: Math.max(moodvalue*1.2, 1.0),
+      //     danceability: Math.max(moodvalue*1.1, 1.0),
+      //     energy: Math.max(moodvalue*1.1, 1.0),
+      // };
+
+      const trackIds = await fetchRecommendations(seedArtists, moodvalue, accessToken);
+      console.log('trackIDs', trackIds)
+      const selectedTracks = trackIds.map(id => ({ id: id }));
+      console.log(selectedTracks)
+      const playlist = await createSpotifyPlaylist(userId, "MoodLog Playlist", selectedTracks, accessToken);
+
+      // const playlist = await createSpotifyPlaylist(userId, "MoodLog Playlist", trackIds.map(id => `spotify:track:${id}`), accessToken);
+
+      console.log(playlist);
+      return playlist;
+  } catch (error) {
+      console.error("Error creating playlist based on favorites:", error);
+      throw new Error("Failed to create playlist.");
+  }
+}
+
+// Helper function to shuffle array
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+  }
+  return array;
+}
+
 // Create a playlist based on mood
 
 async function createPlaylistBasedOnFavorites(_, { email, moodvalue }, { db }) {
@@ -487,7 +570,8 @@ router.post('/create-playlist', async (req, res) => {
   const user_email  = req.email;
   console.log("route create-playlist: : ", user_email);
   try {
-      const playlist = await createPlaylistBasedOnFavorites(null, { email: user_email, moodvalue: moodvalue }, { db: req.db });
+      // const playlist = await createPlaylistBasedOnFavorites(null, { email: user_email, moodvalue: moodvalue }, { db: req.db });
+      const playlist = await createPlaylistBasedOnFavoritesRec(null, { email: user_email, moodvalue: moodvalue }, { db: req.db });
       res.json(playlist);
   } catch (error) {
       res.status(500).send('Failed to create playlist');

@@ -43,7 +43,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
     variables: { email: email },
   });
   
-
+  
   useEffect(() => {
     if (data) {
       setMoodLogs(prevMoodLogs => [...prevMoodLogs, data]);
@@ -197,12 +197,24 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
     //   setAverageMood(JSON.parse(storedMood));
     //   // console.log('average mood: ', averageMood);
     // }
+    let moodValue;
     console.log('createplaylist', storedMood)
-    if (storedMood) {
+    if (averageMood) {
+      moodValue = averageMood;
+      console.log('Creating playlist with average mood:', moodValue);
       setIsCreatingPlaylist(true);  // Set loading state to true
-      console.log('Creating playlist with average mood:', storedMood);
-      const moodValue = JSON.parse(storedMood);
+    }
+    else if (storedMood) {
+      moodValue = JSON.parse(storedMood);
+      console.log('Creating playlist with stored mood:', moodValue);
+      setIsCreatingPlaylist(true);  // Set loading state to true
+    }
+    else {
+      alert('No sufficient mood data to create a playlist. Please log your moods over that past 7 days to use this feature.'); 
+    }
+    if (moodValue) {
       try {
+        setIsCreatingPlaylist(true);  // Set loading state to true
         const response = await axios.post('http://localhost:8000/api/spotify/create-playlist', { moodvalue: moodValue }, { withCredentials: true });
         if (response.data) {
           setPlaylistId(response.data.id);
@@ -216,17 +228,36 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
       } finally {
         setIsCreatingPlaylist(false);  // Set loading state to false regardless of outcome
       }
-      // const response = await axios.post('http://localhost:8000/api/spotify/create-playlist', { moodvalue: storedMood }, { withCredentials: true });
-      // if (response.data) {
-      //   setPlaylistId(response.data.id);
-      //   alert('Playlist created successfully!');
-      // } else {
-      //   alert('No sufficient mood data to create a playlist.');
-      // }
     }
+    // if (storedMood) {
+    //   setIsCreatingPlaylist(true);  // Set loading state to true
+    //   console.log('Creating playlist with average mood:', storedMood);
+    //   const moodValue = JSON.parse(storedMood);
+    //   try {
+    //     const response = await axios.post('http://localhost:8000/api/spotify/create-playlist', { moodvalue: moodValue }, { withCredentials: true });
+    //     if (response.data) {
+    //       setPlaylistId(response.data.id);
+    //       alert('Playlist created successfully!');
+    //     } else {
+    //       alert('No sufficient mood data to create a playlist.');
+    //     }
+    //   } catch (error) {
+    //     console.error('Error creating playlist:', error);
+    //     alert('An error occurred while processing your request.');
+    //   } finally {
+    //     setIsCreatingPlaylist(false);  // Set loading state to false regardless of outcome
+    //   }
+    //   // const response = await axios.post('http://localhost:8000/api/spotify/create-playlist', { moodvalue: storedMood }, { withCredentials: true });
+    //   // if (response.data) {
+    //   //   setPlaylistId(response.data.id);
+    //   //   alert('Playlist created successfully!');
+    //   // } else {
+    //   //   alert('No sufficient mood data to create a playlist.');
+    //   // }
+    // }
     // Clear the flag regardless of playlist creation success to prevent unintended re-entries
     localStorage.removeItem('createPlaylistAfterAuth');
-    // localStorage.removeItem('averageMood'); // Optionally clear it after loading
+    localStorage.removeItem('averageMood'); // Optionally clear it after loading
   };
   // useEffect(() => {
   //   if (averageMood != null && localStorage.getItem('createPlaylistAfterAuth') === 'true') {
@@ -251,7 +282,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
           <MoodStatsBox label="Highest Mood" value={moodData.highestMood} enableHoverEffect={true} />
           <MoodStatsBox label="Lowest Mood" value={moodData.lowestMood} enableHoverEffect={true} />
         </div>
-        <h2>Generate a Playlist Based on Your Weekly Mood</h2>
+        {/* <h2>Generate a Playlist Based on Your Weekly Mood</h2> */}
         <div>         
           <SpotifyButton onClick={checkAndHandleAuthorization} buttonText="Generate Spotify Playlist"/>
         </div>
