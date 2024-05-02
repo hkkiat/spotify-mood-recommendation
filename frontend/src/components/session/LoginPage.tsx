@@ -9,7 +9,7 @@ const LoginPage = () => {
   const [submit, {loading}] = useMutation<Login, LoginVariables>(login, {
     client: defaultClient,
     onCompleted: () => {
-      window.location.href = '/home'
+      window.location.href = '/moodlog'
     }
   })
 

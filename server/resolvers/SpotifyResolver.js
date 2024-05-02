@@ -20,14 +20,16 @@ const crypto = require('crypto');
 // Get user token for the first time and store in db
 // Save user token to db
 async function saveUserTokens(_, {email, userId, accessToken, refreshToken, expiresAt}, {db}) {
+  console.log('saving user tokens')
   // console.log(accessToken)
   // console.log(refreshToken)
   // console.log(expiresAt)
   await db.collection('spotifyUser').updateOne(
     { email },
-    { $set: { accessToken, refreshToken, expiresAt, userId } },
+    { $set: { userId, accessToken, refreshToken, expiresAt } },
     { upsert: true }
   );
+  console.log('save complete')
 }
 
 // Get user token from db 
@@ -81,7 +83,7 @@ async function getUserAccessToken(_, { email }, { db }) {
 // Helper Function: Fetch top artists of a user or top global artists if none are found
 async function fetchUserTopArtists(accessToken) {
   spotifyApi.setAccessToken(accessToken);
-  const result = await spotifyApi.getMyTopArtists({ limit: 50 });
+  const result = await spotifyApi.getMyTopArtists({ limit: 20 });
   return result.body.items.map(artist => artist.id);
 }
 
@@ -279,8 +281,8 @@ async function refreshAccessToken(_, { email }, { db }) {
     console.log(email, user_id, access_token, user.refreshToken, expires_at);
 
     // Use the existing saveUserTokens function to save the new tokens
-    await saveUserTokens(null, { email, userId: user_id, accessToken: access_token, refreshToken: user.refreshToken, expiresAt: expires_at }, { db });
-    console.log('accesstoken: ', accessToken)
+    await saveUserTokens(null, { email: email, userId: user_id, accessToken: access_token, refreshToken: user.refreshToken, expiresAt: expires_at }, { db });
+    console.log('accesstoken: ', access_token)
     return {accessToken: access_token};
     // return access_token;
     // return {
@@ -288,7 +290,7 @@ async function refreshAccessToken(_, { email }, { db }) {
     //   expiresAt: expires_at,
     // };
   } catch (error) {
-    console.error(`Error refreshing access token for user ${userId}:`, error);
+    console.error(`Error refreshing access token for user ${email}:`, error);
     throw new Error('Failed to refresh Spotify access token');
   }
 }
@@ -301,20 +303,28 @@ async function fetchRecommendations(seedArtists, moodValue, accessToken) {
   console.log('accesstoken: ', accessToken)
   spotifyApi.setAccessToken(accessToken);
   try {
-      const tolerance = 1.25;
+      let tolerance
+      if (moodValue < 0.5){
+        min_value = moodValue * 1.2;
+        max_value = 0.75
+      }
+      else {
+        min_value = Math.min(moodValue*1.2, 0.75)
+        max_value = 1.0;
+      }
       const result = await spotifyApi.getRecommendations({
           seed_artists: seedArtists,
-          min_valence: Math.min(moodValue*1.2, 1.0),
-          max_valence: 1.0,
-          // min_danceability: moodValue,
+          min_valence: min_value,
+          max_valence: max_value,
+          // min_danceability: Math.min(moodValue*1.2, 1.0),
           // max_danceability: Math.min(moodValue * tolerance, 1.0),
-          // min_energy: moodValue, 
+          // min_energy: Math.min(moodValue*1.2, 1.0),
           // max_energy: Math.min(moodValue * tolerance, 1.0),
 
           // target_valence: moodAttributes.valence,
           // target_danceability: moodAttributes.danceability,
           // target_energy: moodAttributes.energy,
-          limit: 12
+          limit: 10
       });
       return result.body.tracks.map(track => track.id);
   } catch (error) {
@@ -322,6 +332,84 @@ async function fetchRecommendations(seedArtists, moodValue, accessToken) {
       throw error;
   }
 }
+
+async function fetchGlobalTopArtists(accessToken, neededCount) {
+  spotifyApi.setAccessToken(accessToken);
+  try {
+    console.log('fetchglobaltopartists')
+    const result = await spotifyApi.getPlaylistTracks('37i9dQZEVXbMDoHDwVN2tF'); // This is often a Top Hits playlist
+    let artistIds = new Set();
+    result.body.items.forEach(item => {
+        item.track.artists.forEach(artist => {
+            if (artistIds.size < neededCount) {
+                artistIds.add(artist.id);
+            }
+        });
+    });
+    return Array.from(artistIds);
+  } catch (error) {
+      console.error("Failed to fetch global top artists:", error);
+      throw error;
+  }
+}
+
+async function createPlaylistBasedOnFavoritesFinal(_, { email, moodvalue }, { db }) {
+  try {
+    console.log('createplaylistfinal')
+
+    const user = await db.collection('spotifyUser').findOne({ email: email });
+    const accessToken = user.accessToken;
+    const userId = user.userId;
+    console.log(accessToken)
+    console.log(userId)
+    
+
+    if (!accessToken) {
+        throw new Error(`User with ID ${userId} not found.`);
+    }
+
+    console.log("creating playlist", accessToken)
+    spotifyApi.setAccessToken(accessToken);
+
+    // const userTopArtists = await fetchUserTopArtists(accessToken);
+
+    const topArtists = await fetchUserTopArtists(accessToken);
+    console.log('topArtists: ', topArtists);
+    
+    if (topArtists.length < 20) {
+        const neededCount = 20 - topArtists.length;
+        const globalTopArtists = await fetchGlobalTopArtists(accessToken, neededCount);
+        topArtists = topArtists.concat(globalTopArtists);
+    }
+    
+    const shuffledArtists = shuffleArray([...topArtists]); // Clone to avoid mutating the original array
+    console.log('shuffledArtists: ', shuffledArtists);
+    const seedArtists = shuffledArtists.filter(id => id !== null).slice(0, 5); // Remove any undefined IDs
+    // const seedArtists = topArtists.sort(() => 0.5 - Math.random()).slice(0, 5).map(artist => artist.id);
+    console.log('seedArtists: ', seedArtists);
+
+    // let seedArtists = userTopArtists.map(artist => artist.id);
+
+    // const moodAttributes = {
+    //     valence: moodvalue.valence,
+    //     danceability: moodvalue.danceability,
+    //     energy: moodvalue.energy
+    // };
+
+    const trackIds = await fetchRecommendations(seedArtists, moodvalue, accessToken);
+    console.log('trackIDs', trackIds)
+    const selectedTracks = trackIds.map(id => ({ id: id }));
+    console.log(selectedTracks)
+    const playlist = await createSpotifyPlaylist(userId, "MoodLog Playlist", selectedTracks, accessToken);
+    console.log(playlist)
+    return playlist;
+
+  } catch (error) {
+      console.error("Error creating playlist based on favorites:", error);
+      throw new Error("Failed to create playlist.");
+  }
+}
+
 
 // Create a playlist based on Spotify Recommendation API call
 async function createPlaylistBasedOnFavoritesRec(_, { email, moodvalue }, { db }) {
@@ -546,7 +634,7 @@ router.get('/callback', async (req, res) => {
     // Use the authorize function directly here
     const authorizationResult = await authorize(null, { code, email: user_email }, { db: req.db });
     console.log("Authorization success:", authorizationResult);
-    res.redirect('http://localhost:3000/recommend?authorized=true');
+    res.redirect('http://localhost:3000/recommend2?authorized=true');
   } catch (error) {
     console.error('Error during authorization:', error);
     res.redirect('/#error');
@@ -571,7 +659,8 @@ router.post('/create-playlist', async (req, res) => {
   console.log("route create-playlist: : ", user_email);
   try {
       // const playlist = await createPlaylistBasedOnFavorites(null, { email: user_email, moodvalue: moodvalue }, { db: req.db });
-      const playlist = await createPlaylistBasedOnFavoritesRec(null, { email: user_email, moodvalue: moodvalue }, { db: req.db });
+      const playlist = await createPlaylistBasedOnFavoritesFinal(null, { email: user_email, moodvalue: moodvalue }, { db: req.db });
+      console.log('/createplaylist: ', playlist)
       res.json(playlist);
   } catch (error) {
       res.status(500).send('Failed to create playlist');

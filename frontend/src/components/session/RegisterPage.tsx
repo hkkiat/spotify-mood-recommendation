@@ -9,7 +9,7 @@ const RegisterPage = () => {
   const [submit, {loading}] = useMutation<Register, RegisterVariables>(register, {
     client: defaultClient,
     onCompleted: () => {
-      window.location.href = '/home'
+      window.location.href = '/moodlog'
     }
   })
 
