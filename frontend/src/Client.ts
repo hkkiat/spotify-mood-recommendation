@@ -24,13 +24,17 @@ const ErrorLink = onError(({ graphQLErrors, networkError, response, operation })
 
     let networkErrorObj = networkError as any;
     const statusCode = networkErrorObj.statusCode;
-
+    debugger
     if (statusCode === 403) {
       console.log("Invalid session, redirecting to login page...");
       alert("Invalid session, redirecting to login page...");
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 1500);
+      window.location.href = "/";
+    }
+
+    if (statusCode === 302) {
+      console.log("Already has a session, redirecting from login page...");
+      alert("Already has a session, redirecting from login page...");
+      window.location.href = "/moodlog";
     }
   }
 })

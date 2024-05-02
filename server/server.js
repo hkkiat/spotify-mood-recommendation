@@ -49,6 +49,15 @@ const verifyTokenMiddleware = (req, res, next) => {
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }
+
+  if (req.body) {
+    if (req.body.operationName) {
+      if (req.body.operationName === "DummyLoginCheck") {
+        return res.status(302).send("Already logged in")
+      }
+    }
+  }
+
   return next();
 };
 
