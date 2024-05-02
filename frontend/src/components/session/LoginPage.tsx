@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Input, Button, Alert, Row, Col } from 'antd';
 import { Login, LoginVariables } from '../../graphql/mutations/__generated__/login';
-import { login } from '../../graphql/mutations/SessionControl';
+import { dummyLoginCheck, login } from '../../graphql/mutations/SessionControl';
 import { useMutation } from '@apollo/react-hooks';
 import { defaultClient } from '../../Client';
 import Layout from '../common/layout';
@@ -57,6 +57,18 @@ const LoginPage = (props: IProps) => {
       setErrorMsg(error.message)
     }
   }
+
+  useEffect(() => {
+    defaultClient.query({
+      query: dummyLoginCheck,
+      fetchPolicy: 'network-only'
+    }).then((res) => {
+      //navigate('/moodlog')
+    }).catch((err) => {
+      //console.log(err)
+    })
+  }, [])
+  
   return (
     <Layout currentPage={props.currentPage}>
       <div>

@@ -3,7 +3,7 @@ require('dotenv').config({ path: './.env' });
 const fs = require('fs');
 const express = require('express');
 const { ApolloServer, UserInputError } = require('apollo-server-express');
-const { backendPort } = require('./config');
+const { backendPort, frontendUrl } = require('./config');
 const { connectToDb } = require('./db');
 const resolvers = require('./resolvers/MainResolver');
 const cors = require('cors'); // Import the cors middleware
@@ -11,6 +11,7 @@ const cookieParser = require('cookie-parser');
 const { jwtSecret } = require('./config');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+
 
 
 
@@ -49,6 +50,17 @@ const verifyTokenMiddleware = (req, res, next) => {
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }
+
+  if (req.body) {
+    if (req.body.operationName) {
+      if (req.body.operationName === "DummyLoginCheck") {
+        return res.status(302).send("Already logged in");
+        //redirect(302, frontendUrl + "/moodlog")
+        //.send("Already logged in")
+      }
+    }
+  }
+
   return next();
 };
 

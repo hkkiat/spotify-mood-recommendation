@@ -27,7 +27,7 @@ function App() {
   return (
     <div>
       <ApolloProvider client={defaultClient}>
-        <Routes  >
+        <Routes >
           <Route path={'/'} element={<Login  currentPage={currentPage} />}/>
           <Route path={'register'} element={<RegisterPage currentPage={currentPage}/>} />
           {/*<Route path='/home' element={<HomePage currentPage={currentPage} email='example@example.com'/>} />*/}
