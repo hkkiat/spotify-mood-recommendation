@@ -260,11 +260,12 @@ body {
   background-color: #FFFFFF;
   color: black;
   border: none;
-  padding: 8px 16px;
+  padding: 6px 12px;
   cursor: pointer;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 14px;
   flex: none;
+  width: 120px; 
 }
 
 /* PlaylistButton.module.css */
@@ -337,7 +338,6 @@ body {
   align-items: center; /* Centers content horizontally */
   justify-content: left; /* Centers content vertically, adjust as needed */
   width: 100%; /* Full width to ensure centering applies across the entire line */
-  min-height: 100vh; /* Optional: Takes at least the full height of the viewport */
   padding: 20px;
 }
 
@@ -346,6 +346,9 @@ body {
 }
 
 .hiddenPlaceholder {
-  visibility: hidden;
-  width: auto; /* Adjust based on the logout button's width to keep layout consistent */
+  display: inline-block;
+  width: 120px; 
+  padding: 6px 12px; 
+  visibility: hidden; 
+  border-radius: 4px; 
 }
