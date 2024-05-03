@@ -3,7 +3,7 @@ require('dotenv').config({ path: './.env' });
 const fs = require('fs');
 const express = require('express');
 const { ApolloServer, UserInputError } = require('apollo-server-express');
-const { backendPort } = require('./config');
+const { backendPort, frontendUrl } = require('./config');
 const { connectToDb } = require('./db');
 const resolvers = require('./resolvers/MainResolver');
 const cors = require('cors'); // Import the cors middleware
@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 });
 
 const verifyTokenMiddleware = (req, res, next) => {
-  let token;
+  let tokenBase64;
   console.log("Check request cookies", req.cookies)
   // console.log(req)
 
@@ -77,23 +77,37 @@ const verifyTokenMiddleware = (req, res, next) => {
   // }
 
   if (req.cookies && req.cookies._token) {
-    token = req.cookies._token;
-    console.log('running token: ', token)
+    tokenBase64 = req.cookies._token;
   }
 
-  if (!token) {
+  if (!tokenBase64) {
     return res.status(403).send("A token is required for authentication");
   }
 
   try {
+    const token = Buffer.from(tokenBase64, 'base64').toString('ascii');
     const decoded = jwt.verify(token, jwtSecret);
     console.log("Decoded token:", decoded); // Verify the decoded token content
     req.userId = decoded.userId;
     req.email = decoded.email;
+
+    console.log("Decoded token email: ", decoded.email);
+
     console.log("Email set in req:", req.email); // Check if email is correctly set
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }
+
+  if (req.body) {
+    if (req.body.operationName) {
+      if (req.body.operationName === "DummyLoginCheck") {
+        return res.status(302).send("Already logged in");
+        //redirect(302, frontendUrl + "/moodlog")
+        //.send("Already logged in")
+      }
+    }
+  }
+
   return next();
 };
 

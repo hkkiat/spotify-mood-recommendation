@@ -26,3 +26,12 @@ import { gql } from 'apollo-boost';
       }
     }
   `;
+
+  export const dummyLoginCheck = gql`
+    query DummyLoginCheck {
+      dummyLoginCheck {
+        message
+        extra
+      }
+    }
+  `;

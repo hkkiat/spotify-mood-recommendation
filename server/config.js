@@ -7,5 +7,6 @@ const backendPort = process.env.BACKEND_PORT || 8000;
 const saltRounds = process.env.SALT_ROUNDS || 10;
 const jwtSecret = process.env.JWT_SECRET || "";
 const tokenExp = process.env.TOKEN_EXP_IN_S || 3600;
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
-module.exports = { dbName, dbPort, dbUrl, backendPort, saltRounds, jwtSecret, tokenExp };
+module.exports = { dbName, dbPort, dbUrl, backendPort, saltRounds, jwtSecret, tokenExp, frontendUrl };
