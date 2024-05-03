@@ -19,7 +19,7 @@ const verifyTokenMiddleware = (req, res, next) => {
   let tokenBase64;
   console.log("Check request cookies", req.cookies)
 
-  const bypassOperations = ["Login", "Register", "IntrospectionQuery"]
+  const bypassOperations = ["Login", "Register", "IntrospectionQuery", "Logout"]
   if (req.body) {
     if (req.body.operationName) {
       if (bypassOperations.includes(req.body.operationName)) {
