@@ -73,6 +73,7 @@ const LoginPage = (props: IProps) => {
     <Layout currentPage={props.currentPage}>
       <div>
         <div>
+          <br/><br/>
           <h1>Sign in</h1>
            {errorMsg && <Alert message={errorMsg} />}
            <div className={styles.login}>

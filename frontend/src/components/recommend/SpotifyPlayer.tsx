@@ -16,7 +16,7 @@ const SpotifyPlayer: React.FC<SpotifyPlayerProps> = ({ playlistId }) => {
       {/* <h3>Your Spotify Playlist</h3> */}
       <iframe
         src={srcUrl}
-        width="300"
+        width="760"
         height="380"
         frameBorder="0"
         allowTransparency={true}

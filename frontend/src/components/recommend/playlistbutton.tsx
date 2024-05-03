@@ -9,7 +9,7 @@ interface PlaylistButtonProps {
 }
 
 const PlaylistButton: React.FC<PlaylistButtonProps> = ({ imageUrl, label, number }) => {
-    const displayNumber = number || "N/A"; // If number is falsy, display "N/A"
+    const displayNumber = number !== undefined && number !== null ? number : "N/A";
 
     return (
         <div className={styles.playlistButton} onClick={() => console.log(`Navigating to ${label}`)}>

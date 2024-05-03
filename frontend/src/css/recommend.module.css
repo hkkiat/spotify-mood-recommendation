@@ -162,6 +162,7 @@ body {
   border: none;
   border-radius: 20px; /* Rounded corners */
   padding: 10px 20px; /* Adjust padding as needed */
+  
   font-size: 16px; /* Adjust font size as needed */
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -256,8 +257,8 @@ body {
 
 
 .signInBtn {
-  background-color: #1db954;
-  color: white;
+  background-color: #FFFFFF;
+  color: black;
   border: none;
   padding: 8px 16px;
   cursor: pointer;
@@ -269,10 +270,22 @@ body {
 /* PlaylistButton.module.css */
 
 /* PlaylistButton.module.css */
+/* Assuming this is added in your main CSS file or a relevant module */
+/* PlaylistButton.module.css */
+/* PlaylistButton.module.css */
+.buttonContainer {
+  display: flex;
+  width: 100%; /* Make sure this is enough to fit all buttons, or set a fixed width */
+  flex-wrap: nowrap; /* Prevents wrapping */
+  justify-content: center; /* Centers buttons horizontally */
+  align-items: center; /* Aligns buttons vertically */
+  padding: 20px; /* Padding for visual spacing */
+}
+
 .playlistButton {
   width: 180px;
   height: 180px;
-  margin: 10px;
+  margin: 10px; /* Space between buttons */
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -282,6 +295,7 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 
 .image {
   width: 100%;
@@ -315,4 +329,23 @@ body {
   color: white;
   position: absolute;
   z-index: 10;
+}
+
+.centerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers content horizontally */
+  justify-content: left; /* Centers content vertically, adjust as needed */
+  width: 100%; /* Full width to ensure centering applies across the entire line */
+  min-height: 100vh; /* Optional: Takes at least the full height of the viewport */
+  padding: 20px;
+}
+
+.centerText {
+  text-align: center;
+}
+
+.hiddenPlaceholder {
+  visibility: hidden;
+  width: auto; /* Adjust based on the logout button's width to keep layout consistent */
 }

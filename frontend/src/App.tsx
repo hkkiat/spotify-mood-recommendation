@@ -38,7 +38,7 @@ function App() {
             {/*<Route path='/home' element={<HomePage currentPage={currentPage} email='example@example.com'/>} />*/}
             <Route path='/moodlog' element={<MoodLog currentPage={currentPage} email='example@example.com' />} />
             <Route path='/recommend' element={<Recommendation currentPage={currentPage} email='example@example.com' />} />
-            <Route path='/recommend2' element={<Recommendation2 currentPage={currentPage} email='example@example.com' />} />
+            {/* <Route path='/recommend2' element={<Recommendation2 currentPage={currentPage} email='example@example.com' />} /> */}
             <Route path='/discover' element={<Discover currentPage={currentPage} email='example@example.com' />} />
 
           </Routes>

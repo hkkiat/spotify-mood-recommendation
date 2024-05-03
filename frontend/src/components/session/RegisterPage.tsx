@@ -61,6 +61,8 @@ const RegisterPage = (props: IProps) => {
 
     <div>
       <div>
+        <br/>
+        <br/>
         <h1>Sign up</h1>
         {errorMsg && <Alert message={errorMsg} />}
         <div className={styles.login}>
