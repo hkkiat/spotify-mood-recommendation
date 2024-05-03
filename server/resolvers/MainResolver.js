@@ -2,7 +2,7 @@ const { Kind } = require('graphql/language');
 const { GraphQLScalarType } = require('graphql');
 const { login, register, logout } = require('./SessionControlResolver');
 const { getAllMoodLogs, getExistingMoodLog, createMoodLog, updateMoodLog } = require('./MoodlogResolver');
-const { authorize, refreshAccessToken, createPlaylistBasedOnFavorites } = require('./SpotifyResolver');
+const { authorize, refreshAccessToken, createPlaylistBasedOnFavorites } = require('./SpotifyResolver.js');
 
 const GraphQLDate = new GraphQLScalarType({
   name: 'GraphQLDate',

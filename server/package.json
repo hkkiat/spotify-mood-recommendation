@@ -2,6 +2,7 @@
   "dependencies": {
     "apollo-server-express": "^2.26.0",
     "bcrypt": "^5.1.1",
+    "bootstrap": "^5.3.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -9,6 +10,7 @@
     "graphql": "^15.8.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^3.7.3",
+    "react-bootstrap": "^2.10.2",
     "spotify-web-api-node": "^5.0.2"
   },
   "scripts": {

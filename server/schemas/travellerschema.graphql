@@ -53,6 +53,12 @@ type Playlist {
   tracks: [Track!]!
 }
 
+type UserSession {
+  token: String!
+  email: String!
+  timestamp: String!
+  isActive: Boolean!
+}
 
 type Query {
   # Query to retrieve all moodlogs for person
@@ -60,7 +66,8 @@ type Query {
   	# Query to retrieve all moodlogs for person
   getExistingMoodLog(email: String!, date: GraphQLDate!): MoodLog
 	getUserFavorites(userId: String!): [Artist]
-  dummyLoginCheck: CommonResponse!
+  dummyLoginCheck: CommonResponse!  
+  retrieveUserSession(token: String!): UserSession
 }
 
 type Mutation {
@@ -74,4 +81,5 @@ type Mutation {
   login(email: String!, password: String!): CommonResponse!
   register(email: String!, password: String!): CommonResponse!
   logout: CommonResponse!
+  storeUserSession(token: String!, email: String!, timestamp: String!): UserSession
 }
