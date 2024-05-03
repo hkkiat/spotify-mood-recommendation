@@ -25,9 +25,11 @@ const ErrorLink = onError(({ graphQLErrors, networkError, response, operation })
     let networkErrorObj = networkError as any;
     const statusCode = networkErrorObj.statusCode;
     if (statusCode === 403) {
-      console.log("Invalid session, redirecting to login page...");
-      alert("Invalid session, redirecting to login page...");
-      window.location.href = "/";
+      if (window.location.pathname !== "/") {
+        console.log("Invalid session, redirecting to login page...");
+        alert("Invalid session, redirecting to login page...");
+        window.location.href = "/";
+      }
     }
 
     if (statusCode === 302) {

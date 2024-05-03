@@ -32,7 +32,7 @@ const verifyTokenMiddleware = (req, res, next) => {
   console.log("Check request cookies", req.cookies)
   // console.log(req)
 
-  const bypassOperations = ["Login", "Register", "IntrospectionQuery"]
+  const bypassOperations = ["Login", "Register", "IntrospectionQuery", "Logout"]
   const bypassPaths = ['/callback'];  // Ensure the path matches your route
 
   if (bypassPaths.includes(req.path)) {
@@ -50,7 +50,7 @@ const verifyTokenMiddleware = (req, res, next) => {
     console.log('Bypassing token check for operation: ', req.body.operationName);
     return next();
   }
-  else if (!req.body){
+  else if (!req.body) {
     console.log('req no body: ', req.headers)
     return next();
   }
