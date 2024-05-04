@@ -89,15 +89,37 @@ const verifyTokenMiddleware = (req, res, next) => {
   return next();
 };
 ```
-2. Mood logging - the main interface for mood logging allows you to:
-- Select your current mood from the modal.
-- Add additional description to your mood entry.
-- View past entries and edit past entries by clicking on previous dates.
-
-On the recommend page, the averaged mood, number of mood entries, highes and lowest mood are displayed for user's reference. User can also choose from a range of today, last 7 days and last 30 days to have a general view of the mood entries.
+2. Mood logging - the main interface for mood logging was created using Material UI library, specifically [Date Calendar Component](https://mui.com/x/react-date-pickers/date-calendar/). It extracts the current month's moodlogs using today's date and displays a colored visual based on the overall happiness level for each day.
 
 ```
+<DateCalendar
+  defaultValue={CURRENT_DATE}
+  loading={isLoading}
+  onMonthChange={handleMonthChange}
+  renderLoading={() => <DayCalendarSkeleton />}
+  slots={{
+      day: (props) =>
+          <DayComponent
+              {...props}
+              email={email}
+              moodlogsModifiedDataForCalendar={moodlogsModifiedDataForCalendar}
+              setMoodlogsModifiedDataForCalendar={setMoodlogsModifiedDataForCalendar}
+              updateMoodLog={updateMoodLog}
+          />
+      ,
+  }}
+  slotProps={{
+      day: {
+          highlightedDays,
+      } as any,
+  }}
+/>
 ```
+
+Mood logging allows the user to:
+- View past daily happiness level through a monthly lens.
+- Edit past mood log entries by clicking on past dates.
+- Enter today's overall feeling, happiness level and most impacted category as a new moodlog.
 
 3. Recommend - The Spotify resolver connects to the Spotify API to using access token to fetch a list of the current user's favourite artists. It then fetches the top tracks of these artists to generate a recommended playlist based on the valence target, dancebility and energy target calculated from the previously logged mood entries. This recommended playlist will then be created as a new Spotify playlist under the name of MoodBooster Playlist. 
 
