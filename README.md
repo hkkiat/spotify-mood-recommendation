@@ -17,7 +17,9 @@ There are 3 key features:
 2. Mood Logging
 3. Recommendation
 
-View our mockup [here](https://www.figma.com/file/ZHsnruopY2JYJsaQqxQ0HS/1.-Mood-Log-Page?type=design&node-id=0%3A1&mode=design&t=Gb3aBS2kBKfZR4EE-1)
+View our 
+1. [Initial ideation](https://www.figma.com/file/ZHsnruopY2JYJsaQqxQ0HS/1.-Mood-Log-Page?type=design&node-id=0%3A1&mode=design&t=Gb3aBS2kBKfZR4EE-1)
+2. [Database Schema](https://www.figma.com/file/ZHsnruopY2JYJsaQqxQ0HS/1.-Mood-Log-Page?type=design&node-id=92-120&mode=design&t=0oZOAOpWLjumyn9M-0)
 
 ## Installation
 
@@ -106,7 +108,7 @@ On the recommend page, the averaged mood, number of mood entries, highes and low
 
 MIT License
 
-Copyright © [2024] [Chin Wee Nie, Clement Ng, Kiat Hui Khang]
+Copyright © 2024
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
