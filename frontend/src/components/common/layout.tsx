@@ -20,14 +20,14 @@ const Layout: React.FC<LayoutProps> = ({ currentPage, children }) => {
             <NavBar />
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-md-3">
+                    <div className="col-md-4">
                         {/* <Sidebar currentPage={currentPage} /> */}
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-md-4">
                         {/* Render the main content passed as children */}
                         {children}
                     </div>
-                    <div className="col-md-3">
+                    <div className="col-md-4">
                     </div>
                 </div>
             </div>

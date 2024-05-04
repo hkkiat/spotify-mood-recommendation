@@ -12,6 +12,8 @@ import { createMoodLogMutation } from '../../graphql/mutations/MoodLogMutations'
 import { defaultClient } from '../../Client';
 import HappyRangeSlider from './happyrangeslider';
 import styles from '../../css/moodlog.module.css'
+import Button from 'react-bootstrap/Button';
+import { useNavigate } from 'react-router-dom';
 
 interface MoodLogProps {
   email: string;
@@ -31,6 +33,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   const [overallFeeling, setOverallFeeling] = useState('');
   const [happyRangeValue, setHappyRangeValue] = useState(0.5);
   const [mostImpact, setMostImpact] = useState('');
+  const navigate = useNavigate();
 
   const { loading: moodLogsLoading, error: moodLogsError, data: moodLogsData } =
     useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
@@ -136,6 +139,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
       if (data && data.createMoodLog) {
         setMoodLogs(prevMoodLogs => [...prevMoodLogs, data.createMoodLog]);
         console.log('Mood log data updated: ', data.createMoodLog);
+        navigate('/recommend');
       }
     } catch (error) {
       console.error("Error occurred while invoking creating moodlog mutation function:", error);
@@ -145,12 +149,22 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   return (
     <Layout currentPage={currentPage}>
       <Calendar email={email} moodlogs={moodlogs} updateMoodLog={updateMoodLog} />
+      <br/>
+      <br/>
       <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />
-      <label htmlFor="happyRange" className={`form-label mt-2 ${styles.moodlogquestionheader}`}>What is my happiness level for today?</label>
+      <br/>
+      <br/>
+      <br/>
+      <label htmlFor="happyRange" className={`form-label mt-2 ${styles.moodlogquestionheader}`}>What is your happiness level for today?</label>
       <HappyRangeSlider happinessLevel={happyRangeValue} onHappyRangeChange={handleHappyRangeChange}></HappyRangeSlider>
+      <br/>
+      <br/>
+      <br/>
       <MostImpact onMostImpactChange={handleMostImpactChange} />
+      <br/>
+      <br/>
       <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-primary mb-2" onClick={handleSubmit}>Log my mood in for today!</button>
+        <button className="btn btn-primary mb-2" onClick={handleSubmit}>Log your mood in for today!</button>
       </div>
     </Layout>
   );

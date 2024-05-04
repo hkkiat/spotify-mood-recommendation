@@ -31,7 +31,6 @@ function NavBar() {
                 <span className={styles.appName}>MoodTracker</span>
             </div>
             <ul className={styles.navLinks}>
-                <li><NavItem linkText="Home" active={currentPage === '/home'} onClick={() => setCurrentPage('/home')} /></li>
                 <li><NavItem linkText="Mood Log" active={currentPage === '/moodlog'} onClick={() => setCurrentPage('/moodlog')} /></li>
                 <li><NavItem linkText="Recommend" active={currentPage === '/recommend'} onClick={() => setCurrentPage('/recommend')} /></li>
             </ul>

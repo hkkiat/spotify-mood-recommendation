@@ -1,7 +1,5 @@
 import { FC, FormEvent, useEffect, useState } from 'react';
 import Layout from '../common/layout';
-import Calendar from '../moodlog/calendar';
-import MoodLog from '../moodlog/moodlog';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { getAllMoodLogsQuery } from '../../graphql/queries/MoodLogQueries';
 import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/__generated__/getAllMoodLogs';
@@ -9,9 +7,7 @@ import axios from 'axios';
 import SpotifyPlayer from './SpotifyPlayer'; // Corrected the import and capitalized the component name
 import SpotifyButton from './spotifybutton';
 import PlaylistButton from './playlistbutton';
-import MoodStatsBox from './moodstatsbox';
 import styles from '../../css/recommend.module.css';
-import Button from 'react-bootstrap/Button';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import gloomyImage from '../../images/fog.jpg';
@@ -20,8 +16,6 @@ import veryHappyImage from '../../images/veryhappy.jpg';
 import neutralImage from '../../images/neutral.jpg';
 import veryUnhappyImage from '../../images/veryunhappy.jpeg';
 import unhappyImage from '../../images/unhappy.jpeg';
-
-// import DiscoverButton from './SpotifyButton';
 
 axios.defaults.withCredentials = true;
 const { updateMoodLog } = require('../moodlog/moodlog'); // Ensure path correctness
@@ -87,7 +81,6 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
       const filteredLogs = data.getAllMoodLogs.filter(log => 
         log !== null && log.logdatetime && new Date(log.logdatetime) >= comparisonDate
       );
-        //   const moods = recentLogs.map(log => (log as { happinesslevel: number }).happinesslevel);
 
       if (filteredLogs.length > 0) {
         const moods = filteredLogs.map(log => (log as { happinesslevel: number }).happinesslevel);
@@ -279,7 +272,8 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
                 {/* You can add more buttons here */}
               </div>
               <br/>
-            <div>         
+            <div>  
+            {/* <Button variant="outline-primary" onClick={checkAndHandleAuthorization} >Create your MoodBooster Playlist</Button>{' '}        */}
             <SpotifyButton onClick={checkAndHandleAuthorization} buttonText="Create your MoodBooster Playlist"/>
             </div>
             {isCreatingPlaylist && (

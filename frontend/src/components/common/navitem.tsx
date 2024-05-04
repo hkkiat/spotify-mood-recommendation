@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import styles from '../../css/recommend.module.css';
 
 /*
 This component is for each navbar bar link contained in the sidebar component
@@ -17,7 +18,7 @@ function NavItem({ linkText, active, onClick }: NavItemProps) {
   const path = `/${linkText.replace(/\s+/g, '').toLowerCase()}`;
 
   return (
-    <li className={`nav-item m-1`}>
+    <li className={`${`nav-item m-1`} ${styles.bodyFont}`}>
       <Link onClick={onClick}  to={path} >
         {/* <span className="m-2">{icon}</span> */}
         {linkText}</Link>

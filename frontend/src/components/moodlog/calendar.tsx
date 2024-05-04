@@ -24,6 +24,7 @@ import styles from '../../css/moodlog.module.css'
 import HappyRangeSlider from './happyrangeslider';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 
 
 const CURRENT_DATE = dayjs(); // current date
@@ -115,7 +116,7 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
     updateMoodLog: (updatedMoodLog: any) => void;
 }) {
     const { email, highlightedDays = [], day, outsideCurrentMonth, moodlogsModifiedDataForCalendar, setMoodlogsModifiedDataForCalendar, updateMoodLog, ...other } = props;
-
+    const isFutureDate = day.isAfter(dayjs(), 'day'); // Checks if the 'day' is after today
     const [open, setOpen] = useState(false);
     const [initialMoodLogData, setInitialMoodLogData] = useState<MoodLogData | null>(null); // State to store initial mood log data
     const [overallFeeling, setOverallFeeling] = useState('');
@@ -135,22 +136,30 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
 
     const happinessLevelForColor = moodlogsModifiedDataForCalendar[props.day.date() - 1]?.happinesslevel; // Adjust index to match day
     const colorMap: Record<string, string> = {
-        '1': '#23DC35', //spring green
+        '1': 'green', 
         '0.75': 'lightgreen',
-        '0.5': 'lightgrey',
-        '0.25': 'lightblue',
-        // '0': 'red',
-        '0': '#3B65C4'//not so dark blue
+        '0.5': 'yellow',
+        '0.25': 'orange',
+        '0': 'red'
     };
-    const backgroundColor = colorMap[happinessLevelForColor] || 'grey';
+    const backgroundColor = colorMap[happinessLevelForColor] || 'white';
+    const dayStyle = isFutureDate ? { backgroundColor: 'lightgrey', cursor: 'not-allowed' } : { backgroundColor };
 
     const handleClick = () => {
-        setOpen(true);
-        setInitialMoodLogData({
-            overallfeeling: overallFeeling,
-            happinesslevel: happinessLevel,
-            mostimpact: mostImpact
-        });
+        if (!isFutureDate) {  // Only open the dialog if it's not a future date
+            setOpen(true);
+            setInitialMoodLogData({
+                overallfeeling: overallFeeling,
+                happinesslevel: happinessLevel,
+                mostimpact: mostImpact
+            });
+        }
+        // setOpen(true);
+        // setInitialMoodLogData({
+        //     overallfeeling: overallFeeling,
+        //     happinesslevel: happinessLevel,
+        //     mostimpact: mostImpact
+        // });
     };
 
     const handleClose = () => {
@@ -210,32 +219,36 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
 
     return (
         <>
-            {isCurrentDate && (
-                <Badge
-                    key={props.day.toString()}
-                    overlap="circular"
-                    badgeContent={<BiHome />}
-                    color={'success'}
-                    onClick={handleClick}
-                >
-                    <PickersDay
-                        {...other}
-                        outsideCurrentMonth={outsideCurrentMonth}
-                        day={day}
-                        sx={{ backgroundColor }}
-                        onClick={handleClick} // Keep onClick for current dates
-                    />
-                </Badge>
-            )}
-            {!isCurrentDate && (
-                <PickersDay
-                    {...other}
-                    outsideCurrentMonth={outsideCurrentMonth}
-                    day={day}
-                    sx={{ backgroundColor }}
-                    onClick={handleClick} // Keep onClick for non-current dates
-                />
-            )}
+            <Tooltip title={isFutureDate ? "Cannot select future dates" : "Click to edit"}>
+                <div>
+                    {isCurrentDate && (
+                        <Badge
+                            key={props.day.toString()}
+                            overlap="circular"
+                            badgeContent={<BiHome />}
+                            color={'success'}
+                            onClick={handleClick}
+                        >
+                            <PickersDay
+                                {...other}
+                                outsideCurrentMonth={outsideCurrentMonth}
+                                day={day}
+                                sx={dayStyle}
+                                onClick={handleClick} // This will now prevent action for future dates
+                            />
+                        </Badge>
+                    )}
+                    {!isCurrentDate && (
+                        <PickersDay
+                            {...other}
+                            outsideCurrentMonth={outsideCurrentMonth}
+                            day={day}
+                            sx={dayStyle}
+                            onClick={handleClick}
+                        />
+                    )}
+                </div>
+            </Tooltip>
             <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
                 <DialogTitle>{`Mood for ${day.format('D MMM YYYY, dddd')}`}</DialogTitle>
                 <IconButton
