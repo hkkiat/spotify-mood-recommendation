@@ -39,12 +39,6 @@ const verifyTokenMiddleware = (req, res, next) => {
     console.log(req.path)
     return next();
   }
-  // const bypassPaths = ['/api/spotify/callback']
-
-  // if (bypassPaths.includes(req.path)) {
-  //   console.log('callback')
-  //   return next();  // Bypass token check
-  // }
   // Check if there's an operation name and it's a bypass operation
   else if (req.body && req.body.operationName && bypassOperations.includes(req.body.operationName)) {
     console.log('Bypassing token check for operation: ', req.body.operationName);
@@ -54,27 +48,6 @@ const verifyTokenMiddleware = (req, res, next) => {
     console.log('req no body: ', req.headers)
     return next();
   }
-  // else if (req.body && !req.body.operationName){
-  //   if (req.method === "GET" && !Object.keys(req.body || {}).length) {
-  //     console.log("empty body")
-  //   } else {
-  //     console.log(req.body);
-  //     return next();
-  //   }
-  // }
-
-
-  // if (req.body) {
-  //   if (req.body.operationName) {
-  //     if (bypassOperations.includes(req.body.operationName)) {
-  //       return next();
-  //     }
-  //   } else {
-  //     console.log(req.body, req.header)
-  //     // We skip authorization for the first handshake when there is no req body
-  //     return next()
-  //   }
-  // }
 
   if (req.cookies && req.cookies._token) {
     tokenBase64 = req.cookies._token;
@@ -88,6 +61,7 @@ const verifyTokenMiddleware = (req, res, next) => {
     const token = Buffer.from(tokenBase64, 'base64').toString('ascii');
     const decoded = jwt.verify(token, jwtSecret);
     console.log("Decoded token:", decoded); // Verify the decoded token content
+
     req.userId = decoded.userId;
     req.email = decoded.email;
 
@@ -102,8 +76,6 @@ const verifyTokenMiddleware = (req, res, next) => {
     if (req.body.operationName) {
       if (req.body.operationName === "DummyLoginCheck") {
         return res.status(302).send("Already logged in");
-        //redirect(302, frontendUrl + "/moodlog")
-        //.send("Already logged in")
       }
     }
   }

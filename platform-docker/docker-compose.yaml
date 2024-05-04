@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   frontend:
-    build: 
+    build:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
@@ -10,7 +10,7 @@ services:
     ports:
       - "3000:3000"
   server:
-    build: 
+    build:
       context: ../server
       dockerfile: Dockerfile
     env_file:
@@ -20,10 +20,9 @@ services:
       - ${PWD}/../server/node_modules:/usr/src/app/node_modules:z
     ports:
       - "8000:8000"
-    depends_on:
-      - mongo-db
-  mongo-db:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    
+  #  depends_on:
+  #    - mongo-db
+  #mongo-db:
+  #  image: mongodb/mongodb-community-server:latest
+  #  ports:
+  #    - "27017:27017"
