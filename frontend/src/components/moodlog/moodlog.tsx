@@ -139,6 +139,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
       if (data && data.createMoodLog) {
         setMoodLogs(prevMoodLogs => [...prevMoodLogs, data.createMoodLog]);
         console.log('Mood log data updated: ', data.createMoodLog);
+        localStorage.setItem('fromMoodLog', 'true');
         navigate('/recommend');
       }
     } catch (error) {
@@ -155,7 +156,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
       <br/>
       <br/>
       <br/>
-      <label htmlFor="happyRange" className={`form-label mt-2 ${styles.moodlogquestionheader}`}>What is your happiness level for today?</label>
+      <div className={`form-label mt-2 ${styles.moodlogquestionheader}`}>What is your happiness level for today?</div>
       <HappyRangeSlider happinessLevel={happyRangeValue} onHappyRangeChange={handleHappyRangeChange}></HappyRangeSlider>
       <br/>
       <br/>

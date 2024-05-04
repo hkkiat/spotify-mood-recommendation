@@ -16,6 +16,7 @@ import veryHappyImage from '../../images/veryhappy.jpg';
 import neutralImage from '../../images/neutral.jpg';
 import veryUnhappyImage from '../../images/veryunhappy.jpeg';
 import unhappyImage from '../../images/unhappy.jpeg';
+import { useLocation } from 'react-router-dom';
 
 axios.defaults.withCredentials = true;
 const { updateMoodLog } = require('../moodlog/moodlog'); // Ensure path correctness
@@ -48,8 +49,8 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
   const { loading, error, data } = useQuery<getAllMoodLogs, getAllMoodLogsVariables>(getAllMoodLogsQuery, {
     variables: { email: email },
   });
-  
-  
+  const location = useLocation();
+
   useEffect(() => {
     if (data) {
       setMoodLogs(prevMoodLogs => [...prevMoodLogs, data]);
@@ -121,6 +122,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
 
     if (authorized && localStorage.getItem('createPlaylistAfterAuth')) {
       console.log('running after redirection')
+      console.log(moodData)
       createPlaylist();
       // Remove query parameters from URL
       const newUrl = window.location.pathname;
@@ -164,7 +166,9 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
     const storedMood = localStorage.getItem('averageMood'); 
     let moodValue;
     console.log('createplaylist', storedMood)
-    if (moodData.averageMood === null || moodData.numLogs === 0) {
+    const fromMoodLog = localStorage.getItem('fromMoodLog')
+    if ((moodData.averageMood === null || moodData.numLogs === 0) && !localStorage.getItem('fromMoodLog'))
+      {
       alert('No mood logs available for the selected period. Please log your mood for the selected time period first.');
       return;  // Exit the function to prevent further execution
     }
@@ -201,6 +205,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
     // Clear the flag regardless of playlist creation success to prevent unintended re-entries
     localStorage.removeItem('createPlaylistAfterAuth');
     localStorage.removeItem('averageMood'); // Optionally clear it after loading
+    localStorage.removeItem('fromMoodLog');
   };
 
   // Utility function to determine the image URL for the summary stats boxes

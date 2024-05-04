@@ -31,8 +31,8 @@ function NavBar() {
                 <span className={styles.appName}>MoodTracker</span>
             </div>
             <ul className={styles.navLinks}>
-                <li><NavItem linkText="Mood Log" active={currentPage === '/moodlog'} onClick={() => setCurrentPage('/moodlog')} /></li>
-                <li><NavItem linkText="Recommend" active={currentPage === '/recommend'} onClick={() => setCurrentPage('/recommend')} /></li>
+                <NavItem linkText="Mood Log" active={currentPage === '/moodlog'} onClick={() => setCurrentPage('/moodlog')} />
+                <NavItem linkText="Recommend" active={currentPage === '/recommend'} onClick={() => setCurrentPage('/recommend')} />
             </ul>
             {isSignInPage ? (
                 <div className={styles.hiddenPlaceholder}></div> // Placeholder when logout is not shown
