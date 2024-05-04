@@ -25,7 +25,6 @@ function App() {
     <div>
       <ApolloProvider client={defaultClient}>
         <div>
-          {/* <Navbar />  Navbar is added here to show on all pages */}
           <Routes >
             <Route path={'/'} element={<Login  currentPage={currentPage} />}/>
             <Route path={'register'} element={<RegisterPage currentPage={currentPage}/>} />
