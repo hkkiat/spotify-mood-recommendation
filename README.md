@@ -4,13 +4,13 @@ Mood tracker to allow users to track their moods over time, and provide encourag
 
 ## Table of Contents
 
-- [About](#about)
+- [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
 - [Authors](#authors)
 
-## Key Features
+## Introduction
 
 There are 3 key features:
 1. User Authentication
