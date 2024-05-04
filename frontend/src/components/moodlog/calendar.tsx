@@ -283,7 +283,7 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
                         <MenuItem value={"Others"}>Others</MenuItem>
                     </Select>
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                        <Button variant="contained" color="primary" onClick={handleUpdate}>Submit</Button>
+                        <Button variant="contained" color="primary" onClick={handleUpdate}>Edit</Button>
                     </Box>
                 </DialogContent>
             </Dialog >
