@@ -1,25 +1,8 @@
-/* CSS module syntax */
-/* @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-radius: 50%;
-  border-top: 4px solid #3498db;
-  width: 20px;
-  height: 20px;
-  animation: spin 2s linear infinite;
-} */
-/* App.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
 
-body {
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  background-color: #171710; /* Dark grey, almost black */
-  color: #ffffff; /* Ensures text is white by default */
+.bodyFont {
+  font-family: 'Inter', sans-serif;
 }
 
 .spinner {
@@ -162,6 +145,7 @@ body {
   border: none;
   border-radius: 20px; /* Rounded corners */
   padding: 10px 20px; /* Adjust padding as needed */
+  
   font-size: 16px; /* Adjust font size as needed */
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -256,23 +240,31 @@ body {
 
 
 .signInBtn {
-  background-color: #1db954;
-  color: white;
+  background-color: #FFFFFF;
+  color: black;
   border: none;
-  padding: 8px 16px;
+  padding: 6px 12px;
   cursor: pointer;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 14px;
   flex: none;
+  width: 120px; 
 }
 
-/* PlaylistButton.module.css */
+/* PlaylistButton */
+.buttonContainer {
+  display: flex;
+  width: 100%; /* Make sure this is enough to fit all buttons, or set a fixed width */
+  flex-wrap: nowrap; /* Prevents wrapping */
+  justify-content: center; /* Centers buttons horizontally */
+  align-items: center; /* Aligns buttons vertically */
+  padding: 20px; /* Padding for visual spacing */
+}
 
-/* PlaylistButton.module.css */
 .playlistButton {
   width: 180px;
   height: 180px;
-  margin: 10px;
+  margin: 10px; /* Space between buttons */
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -282,6 +274,7 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 
 .image {
   width: 100%;
@@ -316,3 +309,25 @@ body {
   position: absolute;
   z-index: 10;
 }
+
+.centerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers content horizontally */
+  justify-content: left; /* Centers content vertically, adjust as needed */
+  width: 100%; /* Full width to ensure centering applies across the entire line */
+  padding: 20px;
+}
+
+.centerText {
+  text-align: center;
+}
+
+.hiddenPlaceholder {
+  display: inline-block;
+  width: 120px; 
+  padding: 6px 12px; 
+  visibility: hidden; 
+  border-radius: 4px; 
+}
+

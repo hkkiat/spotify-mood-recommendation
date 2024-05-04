@@ -400,7 +400,7 @@ async function createPlaylistBasedOnFavoritesFinal(_, { email, moodvalue }, { db
     console.log('trackIDs', trackIds)
     const selectedTracks = trackIds.map(id => ({ id: id }));
     console.log(selectedTracks)
-    const playlist = await createSpotifyPlaylist(userId, "MoodLog Playlist", selectedTracks, accessToken);
+    const playlist = await createSpotifyPlaylist(userId, "MoodBooster Playlist", selectedTracks, accessToken);
     console.log(playlist)
     return playlist;
 
@@ -634,7 +634,7 @@ router.get('/callback', async (req, res) => {
     // Use the authorize function directly here
     const authorizationResult = await authorize(null, { code, email: user_email }, { db: req.db });
     console.log("Authorization success:", authorizationResult);
-    res.redirect('http://localhost:3000/recommend2?authorized=true');
+    res.redirect('http://localhost:3000/recommend?authorized=true');
   } catch (error) {
     console.error('Error during authorization:', error);
     res.redirect('/#error');

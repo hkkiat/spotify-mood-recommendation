@@ -16,9 +16,10 @@ const OverallFeeling: FC<OverallFeelingProps> = ({ onOverallFeelingChange }) => 
 
     return (
         <div>
-            <label className={`form-label mt-2 ${styles.moodlogquestionheader}`} htmlFor="textAreaExample1">How do I feel today?</label>
+            <label className={`form-label mt-2 ${styles.moodlogquestionheader}`} htmlFor="textAreaExample1">How do you feel today?</label>
             <textarea
                 className="form-control"
+                placeholder="Log your feelings and thoughts today"
                 id="textAreaExample1"
                 rows={4}
                 value={feelingText}

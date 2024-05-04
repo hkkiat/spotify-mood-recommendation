@@ -30,11 +30,11 @@ function Sidebar({ currentPage }: SideBarProps) {
     <div className="sidebar">
       <ul className="nav flex-column">
         <UserProfile></UserProfile>
-        <NavItem linkText="Home" active={currentPage === '/home'} icon={<BiHome />} />
-        <NavItem onClick={logoutUser} linkText="Logout" active={currentPage === '/logout'} icon={<BiLogOut />} />
-        <NavItem linkText="Mood Log" active={currentPage === '/moodlog'} icon={<BiChart />} />
-        <NavItem linkText="Recommend" active={currentPage === '/recommend'} icon={<BiCommand />} />
-        <NavItem linkText="Discover" active={currentPage === '/discover'} icon={<BiSearch />} />
+        <NavItem linkText="Home" active={currentPage === '/home'} />
+        <NavItem onClick={logoutUser} linkText="Logout" active={currentPage === '/logout'} />
+        <NavItem linkText="Mood Log" active={currentPage === '/moodlog'}  />
+        <NavItem linkText="Recommend" active={currentPage === '/recommend2'}  />
+        <NavItem linkText="Discover" active={currentPage === '/discover'}  />
       </ul>
     </div>
   );
