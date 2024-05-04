@@ -3,13 +3,13 @@ import Layout from '../common/layout';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { getAllMoodLogsQuery } from '../../graphql/queries/MoodLogQueries';
 import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/__generated__/getAllMoodLogs';
-import axios from 'axios';
+import axios from 'axios'; 
 import SpotifyPlayer from './SpotifyPlayer'; // Corrected the import and capitalized the component name
 import SpotifyButton from './spotifybutton';
 import PlaylistButton from './playlistbutton';
 import styles from '../../css/recommend.module.css';
-import ToggleButton from 'react-bootstrap/ToggleButton';
-import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+import {ToggleButton, ToggleButtonGroup} from 'react-bootstrap';
+//import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import gloomyImage from '../../images/fog.jpg';
 import happyImage from '../../images/happy.jpg';
 import veryHappyImage from '../../images/veryhappy.jpg';
