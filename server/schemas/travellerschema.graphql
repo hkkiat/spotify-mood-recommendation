@@ -77,7 +77,7 @@ type Mutation {
 	# Spotify mutations
 	authorize(code: String!): AuthData
   refreshAccessToken(userId: String!): AuthData
-  createPlaylistBasedOnFavorites(userId: String!, moodvalue: Float!): Playlist!
+  createPlaylistBasedOnFavoritesFinal(userId: String!, moodvalue: Float!): Playlist!
   login(email: String!, password: String!): CommonResponse!
   register(email: String!, password: String!): CommonResponse!
   logout: CommonResponse!

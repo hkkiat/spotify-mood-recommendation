@@ -142,8 +142,8 @@ function DayComponent(props: PickersDayProps<Dayjs> & {
         '0.25': 'orange',
         '0': 'red'
     };
-    const backgroundColor = colorMap[happinessLevelForColor] || 'white';
-    const dayStyle = isFutureDate ? { backgroundColor: 'lightgrey', cursor: 'not-allowed' } : { backgroundColor };
+    const backgroundColor = colorMap[happinessLevelForColor] || 'lightgrey';
+    const dayStyle = isFutureDate ? { backgroundColor: 'white', cursor: 'not-allowed' } : { backgroundColor };
 
     const handleClick = () => {
         if (!isFutureDate) {  // Only open the dialog if it's not a future date
@@ -384,8 +384,15 @@ const Calendar: FC<CalendarProps> = ({ email, moodlogs, updateMoodLog }) => {
             // because it is possible to switch between months pretty quickly
             requestAbortController.current.abort();
         }
+
+        // if (moodlogsOriginalData.length === 0) { // Check if there are any mood logs
+        //     // alert('No mood log data available. Please log your mood today first.'); // Display alert
+        //     return; // Prevent calendar from navigating to other months
+        // }
+
         setIsLoading(true);
         setHighlightedDays([]);
+        console.log('moodlogsOriginalData: ', moodlogsOriginalData)
         prepareCalendarArray(email, date, moodlogsOriginalData);
     };
 
