@@ -123,24 +123,11 @@ app.use(cookieParser()); // Make sure to use cookieParser before your custom mid
       cors: false,
     });
 
-    //app.use((err, req, res, next) => {
-    //  // Ensure CORS headers are set for error responses
-    //  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    //  res.header('Access-Control-Allow-Credentials', 'true');
-    //  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    //  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-
-    //});
   } catch (err) {
     console.log('ERROR:', err);
   }
 })();
 
-// app.use('/api/spotify', router);  // Applying the verifyTokenMiddleware to Spotify routes
-
-// app.use('/api/spotify', verifyTokenMiddleware, router);  // Applying the verifyTokenMiddleware to Spotify routes
-
-// app.use('/api/spotify', router); 
 
 (async function () {
   try {

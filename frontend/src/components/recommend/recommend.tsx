@@ -119,11 +119,14 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
     const queryParams = new URLSearchParams(window.location.search);
     const authorized = queryParams.get('authorized');
     console.log('Authorisation check: ', authorized);
+    localStorage.setItem('authorized', 'true');
+
 
     if (authorized && localStorage.getItem('createPlaylistAfterAuth')) {
       console.log('running after redirection')
       console.log(moodData)
       createPlaylist();
+      localStorage.removeItem('authorized');
       // Remove query parameters from URL
       const newUrl = window.location.pathname;
       window.history.replaceState(null, '', newUrl);
@@ -133,14 +136,12 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
 
   const handleAuthorizeAndCreatePlaylist = async () => {
     try {
-      // Check if we are back after authorization and a playlist should be created
       if (localStorage.getItem('createPlaylistAfterAuth')) {
         console.log('Returned after authorization, proceeding to create playlist');
         createPlaylist();
       } else {
         console.log('Not yet authorized, checking authorization status');
-        // console.log('set averagemood')
-        // localStorage.setItem('averageMood', JSON.stringify(averageMood));
+
         await checkAndHandleAuthorization();
       }
     } catch (error) {
@@ -167,7 +168,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
     let moodValue;
     console.log('createplaylist', storedMood)
     const fromMoodLog = localStorage.getItem('fromMoodLog')
-    if ((moodData.averageMood === null || moodData.numLogs === 0) && !localStorage.getItem('fromMoodLog'))
+    if ((moodData.averageMood === null || moodData.numLogs === 0) && (!localStorage.getItem('fromMoodLog')) && (!localStorage.getItem('authorized')))
       {
       alert('No mood logs available for the selected period. Please log your mood for the selected time period first.');
       return;  // Exit the function to prevent further execution
@@ -206,6 +207,9 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
     localStorage.removeItem('createPlaylistAfterAuth');
     localStorage.removeItem('averageMood'); // Optionally clear it after loading
     localStorage.removeItem('fromMoodLog');
+    localStorage.removeItem('authorized');
+
+
   };
 
   // Utility function to determine the image URL for the summary stats boxes

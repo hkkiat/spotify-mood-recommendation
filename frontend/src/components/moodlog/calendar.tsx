@@ -385,10 +385,10 @@ const Calendar: FC<CalendarProps> = ({ email, moodlogs, updateMoodLog }) => {
             requestAbortController.current.abort();
         }
 
-        if (moodlogsOriginalData.length === 0) { // Check if there are any mood logs
-            // alert('No mood log data available. Please log your mood today first.'); // Display alert
-            return; // Prevent calendar from navigating to other months
-        }
+        // if (moodlogsOriginalData.length === 0) { // Check if there are any mood logs
+        //     // alert('No mood log data available. Please log your mood today first.'); // Display alert
+        //     return; // Prevent calendar from navigating to other months
+        // }
 
         setIsLoading(true);
         setHighlightedDays([]);

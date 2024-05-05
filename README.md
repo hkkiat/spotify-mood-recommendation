@@ -121,9 +121,140 @@ Mood logging allows the user to:
 - Edit past mood log entries by clicking on past dates.
 - Enter today's overall feeling, happiness level and most impacted category as a new moodlog.
 
-3. Recommend - The Spotify resolver connects to the Spotify API to using access token to fetch a list of the current user's favourite artists. It then fetches the top tracks of these artists to generate a recommended playlist based on the valence target, dancebility and energy target calculated from the previously logged mood entries. This recommended playlist will then be created as a new Spotify playlist under the name of MoodBooster Playlist. 
+3. Recommend - The Recommend function allows a user to generate a playlist based on their music taste as well as their moods using Spotify. The intent is to provide users with mood-suitable music to provide some comfort and lift their mooods. 
+
+The Spotify resolver connects to the Spotify API using the OAuth 2.0 authorization framework, and obtains an access token after user provides the application with access to their data.
 
 ```
+//Obtain access to user's spotify account, and stores access token in database
+router.get('/auth-url', async (req, res) => {
+  console.log('auth-url')
+  const scopes = ['user-follow-read', 'user-top-read', 'playlist-modify-private', 'playlist-modify-public', 'user-read-private'];
+  const user_email = req.email; // Assuming email is already set in req by previous middleware
+  const token = crypto.randomBytes(20).toString('hex');
+  const timestamp = new Date();
+
+  // Store in the database
+  await storeUserSession(null, {
+    token,
+    email: user_email,
+    timestamp
+  }, {db: req.db});
+  const state = token;
+  const authorizeUrl = spotifyApi.createAuthorizeURL(scopes, state);
+  res.json({ url: authorizeUrl });
+});
+```
+
+The application then fetches a list of the current user's top 20 favourite artists. In the case where users have less than 20 top artists, the remaining number is fetched from artists who feature in Spotify's top 50 global tracks. 5 artists are then randomly selected from a user's top 20 artist as seed artists for playlist generation.  A valence value for the playlist is then computed based on a user's logged moods (today, past 7 days or past 30 days), and songs will be selected for the playlist based on the valence value as well as similarity to the seed artists. The valence value is a attribute for Spotify tracks that represents the mood of the song, with a higher value representing better mood. Finally, the recommended playlist will then be created as a new Spotify playlist under the name of MoodBooster Playlist, which will appear in the Spotify web player on the page, as well as in a Spotify's user account. 
+
+```
+//frontend code
+const createPlaylist = async () => {
+    const storedMood = localStorage.getItem('averageMood'); 
+    let moodValue;
+    console.log('createplaylist', storedMood)
+    const fromMoodLog = localStorage.getItem('fromMoodLog')
+    if ((moodData.averageMood === null || moodData.numLogs === 0) && !localStorage.getItem('fromMoodLog'))
+      {
+      alert('No mood logs available for the selected period. Please log your mood for the selected time period first.');
+      return;  // Exit the function to prevent further execution
+    }
+    if (averageMood) {
+      moodValue = averageMood;
+      console.log('Creating playlist with average mood:', moodValue);
+      setIsCreatingPlaylist(true);  // Set loading state to true
+    }
+    else if (storedMood) {
+      moodValue = JSON.parse(storedMood);
+      console.log('Creating playlist with stored mood:', moodValue);
+      setIsCreatingPlaylist(true);  // Set loading state to true
+    }
+    else {
+      alert('No sufficient mood data to create a playlist. Please log your moods for the selected time period first.'); 
+    }
+    if (moodValue) {
+      try {
+        setIsCreatingPlaylist(true);  // Set loading state to true
+        const response = await axios.post('http://localhost:8000/api/spotify/create-playlist', { moodvalue: moodValue }, { withCredentials: true });
+        if (response.data) {
+          setPlaylistId(response.data.id);
+          alert('Playlist created successfully!');
+        } else {
+          alert('No sufficient mood data to create a playlist.');
+        }
+      } catch (error) {
+        console.error('Error creating playlist:', error);
+        alert('An error occurred while processing your request.');
+      } finally {
+        setIsCreatingPlaylist(false);  // Set loading state to false regardless of outcome
+      }
+    }
+}
+
+//backend code
+router.post('/create-playlist', async (req, res) => {
+  const { moodvalue } = req.body; // Ensure you securely authenticate and validate these inputs
+  console.log(moodvalue)
+  const user_email  = req.email;
+  console.log("route create-playlist: : ", user_email);
+  try {
+      const playlist = await createPlaylistBasedOnFavoritesFinal(null, { email: user_email, moodvalue: moodvalue }, { db: req.db });
+      console.log('/createplaylist: ', playlist)
+      res.json(playlist);
+  } catch (error) {
+      res.status(500).send('Failed to create playlist');
+  }
+});
+
+async function createPlaylistBasedOnFavoritesFinal(_, { email, moodvalue }, { db }) {
+  try {
+    console.log('createplaylistfinal')
+
+    const user = await db.collection('spotifyUser').findOne({ email: email });
+    const accessToken = user.accessToken;
+    const userId = user.userId;
+    console.log(accessToken)
+    console.log(userId)
+    
+
+    if (!accessToken) {
+        throw new Error(`User with ID ${userId} not found.`);
+    }
+
+    console.log("creating playlist", accessToken)
+    spotifyApi.setAccessToken(accessToken);
+
+    // fetch top 20 artists of user
+    const topArtists = await fetchUserTopArtists(accessToken);
+    console.log('topArtists: ', topArtists);
+    
+    // if less than 20 top artists, fill up with artists featuring in Spotify's global top 50 tracks list
+    if (topArtists.length < 20) {
+        const neededCount = 20 - topArtists.length;
+        const globalTopArtists = await fetchGlobalTopArtists(accessToken, neededCount);
+        topArtists = topArtists.concat(globalTopArtists);
+    }
+    
+    const shuffledArtists = shuffleArray([...topArtists]); // Clone to avoid mutating the original array
+    console.log('shuffledArtists: ', shuffledArtists);
+    const seedArtists = shuffledArtists.filter(id => id !== null).slice(0, 5); // Remove any undefined IDs
+    console.log('seedArtists: ', seedArtists);
+
+    // fetch tracks for the playlist with valence value based on user's mood
+    const trackIds = await fetchRecommendations(seedArtists, moodvalue, accessToken);
+    console.log('trackIDs', trackIds)
+    const selectedTracks = trackIds.map(id => ({ id: id }));
+    console.log(selectedTracks)
+    const playlist = await createSpotifyPlaylist(userId, "MoodBooster Playlist", selectedTracks, accessToken);
+    console.log(playlist)
+    return playlist;
+
+  } catch (error) {
+      console.error("Error creating playlist based on favorites:", error);
+      throw new Error("Failed to create playlist.");
+  }
+}
 ```
 
 ## License

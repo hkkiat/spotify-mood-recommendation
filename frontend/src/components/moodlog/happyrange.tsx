@@ -32,7 +32,6 @@ function HappyRange({ onHappyRangeChange }: HappyRangeProps) {
 
     return (
         <div >
-            <label htmlFor="happyRange" className={`form-label mt-2 ${styles.moodlogquestionheader}`}>What is your happiness level for today?</label>
             <div className="range" data-mdb-range-init>
                 <input
                     type="range"
