@@ -6,7 +6,7 @@ import MostImpact from './mostimpact';
 import Calendar from './calendar';
 import { useMutation, useQuery }  from '@apollo/react-hooks';
 import { getAllMoodLogsQuery } from '../../graphql/queries/MoodLogQueries';
-import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/__generated__/getAllMoodLogs';
+import { getAllMoodLogs, getAllMoodLogsVariables, getAllMoodLogs_getAllMoodLogs } from '../../graphql/queries/__generated__/getAllMoodLogs';
 import { createMoodLog, createMoodLogVariables } from '../../graphql/mutations/__generated__/createMoodLog';
 import { createMoodLogMutation } from '../../graphql/mutations/MoodLogMutations';
 import { defaultClient } from '../../Client';
@@ -29,7 +29,7 @@ interface DailyMoodLogInputFromCalendar {
 }
 
 const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
-  const [moodlogs, setMoodLogs] = useState<any[]>([]);
+  const [moodlogs, setMoodLogs] = useState<getAllMoodLogs_getAllMoodLogs[]>([]);
   const [overallFeeling, setOverallFeeling] = useState('');
   const [happyRangeValue, setHappyRangeValue] = useState(0.5);
   const [mostImpact, setMostImpact] = useState('');
@@ -39,6 +39,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
       getAllMoodLogsQuery,
       {
+        fetchPolicy: 'network-only',
         //client: defaultClient,
         variables: { email: email },
       }
@@ -63,8 +64,8 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
 
   // Load log data received from GraphQL query
   useEffect(() => {
-    if (moodLogsData) {
-      setMoodLogs(prevMoodLogs => [...prevMoodLogs, moodLogsData]);
+    if (!!moodLogsData ) {
+      setMoodLogs(moodLogsData.getAllMoodLogs);
       console.log('Mood log data from GQL query: ', moodLogsData);
     }
   }, [moodLogsData]);
@@ -91,8 +92,10 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   
       // If the mood log is created successfully
       if (data && data.createMoodLog) {
+        const newMoodlogs = [...moodlogs]
+        newMoodlogs.push(data.createMoodLog)
         // Update the mood logs state with the newly created mood log
-        setMoodLogs(prevMoodLogs => [...prevMoodLogs, data.createMoodLog]);
+        setMoodLogs(newMoodlogs);
         console.log('Mood log data updated: ', data.createMoodLog);
       }
     } catch (error) {
@@ -137,7 +140,9 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
 
       // After the mutation function is invoked successfully with response
       if (data && data.createMoodLog) {
-        setMoodLogs(prevMoodLogs => [...prevMoodLogs, data.createMoodLog]);
+        const newMoodlogs = [...moodlogs]
+        newMoodlogs.push(data.createMoodLog)
+        setMoodLogs(newMoodlogs);
         console.log('Mood log data updated: ', data.createMoodLog);
         localStorage.setItem('fromMoodLog', 'true');
         navigate('/recommend');

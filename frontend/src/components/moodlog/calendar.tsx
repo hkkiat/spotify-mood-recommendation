@@ -25,6 +25,7 @@ import HappyRangeSlider from './happyrangeslider';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
+import { getAllMoodLogs_getAllMoodLogs } from '../../graphql/queries/__generated__/getAllMoodLogs';
 
 
 const CURRENT_DATE = dayjs(); // current date
@@ -57,7 +58,8 @@ interface DailyMoodLog {
 
 interface CalendarProps {
     email: string;
-    moodlogs: any[]; // Assuming moodlogs is an array of mood log data
+    moodlogs: getAllMoodLogs_getAllMoodLogs[];
+    //moodlogs: any[]; // Assuming moodlogs is an array of mood log data
     updateMoodLog: (updatedMoodLog: any) => void;
 }
 
@@ -314,15 +316,15 @@ const Calendar: FC<CalendarProps> = ({ email, moodlogs, updateMoodLog }) => {
     const requestAbortController = useRef<AbortController | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
-    const [moodlogsOriginalData, setMoodlogsOriginalData] = useState<DailyMoodLog[]>(moodlogs[0]?.getAllMoodLogs || []); // this depends on prop data
+    const [moodlogsOriginalData, setMoodlogsOriginalData] = useState<DailyMoodLog[]>(moodlogs || []); // this depends on prop data
     const [moodlogsModifiedDataForCalendar, setMoodlogsModifiedDataForCalendar] = useState<DailyMoodLog[]>([]); // this depends on month selected
 
     // Initialize prop data into moodlogsOriginalData
     useEffect(() => {
-        if (moodlogs.length !== 0) {
-            console.log("Initializing moodlogsOriginalData state with:", moodlogs[0].getAllMoodLogs);
-            setMoodlogsOriginalData(moodlogs[0].getAllMoodLogs);
-        }
+        //if (moodlogs.length !== 0) {
+            console.log("Initializing moodlogsOriginalData state with:", moodlogs);
+            setMoodlogsOriginalData(moodlogs);
+        //}
     }, [moodlogs]);
 
     // Initialize current month's array based on today's date & moodlogsModifiedDataForCalendar 

@@ -91,7 +91,7 @@ function logUserIn(user, res) {
 function generateToken(user) {
   const sessionHash = { id: user._id, email: user.email, iat: Date.now() };
   const token = jwt.sign(sessionHash, jwtSecret, {
-    expiresIn: '60m',
+    expiresIn: 900,
   });
   return token;
 }

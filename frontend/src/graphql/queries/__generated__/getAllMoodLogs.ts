@@ -21,7 +21,7 @@ export interface getAllMoodLogs {
   /**
    * Query to retrieve all moodlogs for person
    */
-  getAllMoodLogs: (getAllMoodLogs_getAllMoodLogs | null)[] | null;
+  getAllMoodLogs: getAllMoodLogs_getAllMoodLogs[];
 }
 
 export interface getAllMoodLogsVariables {
