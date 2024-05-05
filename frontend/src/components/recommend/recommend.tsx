@@ -54,7 +54,6 @@ const Recommendation: React.FC<RecommendationProps> = ({ email, currentPage }) =
   useEffect(() => {
     if (data) {
       setMoodLogs(prevMoodLogs => [...prevMoodLogs, data]);
-      console.log('Mood log data from GQL query: ', data);
     }
   }, [data]);
 

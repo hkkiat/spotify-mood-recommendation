@@ -62,7 +62,7 @@ type UserSession {
 
 type Query {
   # Query to retrieve all moodlogs for person
-  getAllMoodLogs(email: String!): [MoodLog]
+  getAllMoodLogs(email: String!): [MoodLog!]!
   	# Query to retrieve all moodlogs for person
   getExistingMoodLog(email: String!, date: GraphQLDate!): MoodLog
 	getUserFavorites(userId: String!): [Artist]

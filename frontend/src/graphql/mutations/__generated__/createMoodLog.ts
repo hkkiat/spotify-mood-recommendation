@@ -11,6 +11,7 @@ import { InputMoodLog } from "./../../../../__generated__/clientGlobalTypesFile"
 
 export interface createMoodLog_createMoodLog {
   __typename: "MoodLog";
+  _id: string;
   email: string;
   logdatetime: any;
   overallfeeling: string;

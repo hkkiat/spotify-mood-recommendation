@@ -6,7 +6,7 @@ import MostImpact from './mostimpact';
 import Calendar from './calendar';
 import { useMutation, useQuery }  from '@apollo/react-hooks';
 import { getAllMoodLogsQuery } from '../../graphql/queries/MoodLogQueries';
-import { getAllMoodLogs, getAllMoodLogsVariables } from '../../graphql/queries/__generated__/getAllMoodLogs';
+import { getAllMoodLogs, getAllMoodLogsVariables, getAllMoodLogs_getAllMoodLogs } from '../../graphql/queries/__generated__/getAllMoodLogs';
 import { createMoodLog, createMoodLogVariables } from '../../graphql/mutations/__generated__/createMoodLog';
 import { createMoodLogMutation } from '../../graphql/mutations/MoodLogMutations';
 import { defaultClient } from '../../Client';
@@ -14,6 +14,7 @@ import HappyRangeSlider from './happyrangeslider';
 import styles from '../../css/moodlog.module.css'
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
+import dayjs, { Dayjs } from 'dayjs';
 
 interface MoodLogProps {
   email: string;
@@ -29,7 +30,9 @@ interface DailyMoodLogInputFromCalendar {
 }
 
 const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
-  const [moodlogs, setMoodLogs] = useState<any[]>([]);
+  const [moodlogs, setMoodLogs] = useState<getAllMoodLogs_getAllMoodLogs[]>([]);
+  const [displayMonth, setDisplayMonth] = useState<Dayjs>(dayjs());
+
   const [overallFeeling, setOverallFeeling] = useState('');
   const [happyRangeValue, setHappyRangeValue] = useState(0.5);
   const [mostImpact, setMostImpact] = useState('');
@@ -39,6 +42,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
     useQuery<getAllMoodLogs, getAllMoodLogsVariables>(
       getAllMoodLogsQuery,
       {
+        fetchPolicy: 'network-only',
         //client: defaultClient,
         variables: { email: email },
       }
@@ -63,9 +67,8 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
 
   // Load log data received from GraphQL query
   useEffect(() => {
-    if (moodLogsData) {
-      setMoodLogs(prevMoodLogs => [...prevMoodLogs, moodLogsData]);
-      console.log('Mood log data from GQL query: ', moodLogsData);
+    if (!!moodLogsData) {
+      setMoodLogs(moodLogsData.getAllMoodLogs);
     }
   }, [moodLogsData]);
 
@@ -79,7 +82,6 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
       mostimpact: updatedMoodLog.mostimpact,
     }
     
-    console.log("moodLogInput passed from calendar component to gql:", moodLogInput);
 
     try {
       // Invoke the mutation function to create a mood log
@@ -91,9 +93,11 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   
       // If the mood log is created successfully
       if (data && data.createMoodLog) {
+        const newMoodlogs = [...moodlogs]
+        newMoodlogs.push(data.createMoodLog)
         // Update the mood logs state with the newly created mood log
-        setMoodLogs(prevMoodLogs => [...prevMoodLogs, data.createMoodLog]);
-        console.log('Mood log data updated: ', data.createMoodLog);
+        setMoodLogs(newMoodlogs);
+        setDisplayMonth(dayjs(updatedMoodLog.logdatetime));
       }
     } catch (error) {
       console.error("Error occurred while creating mood log:", error);
@@ -126,19 +130,18 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
       happinesslevel: happyRangeValue,
       mostimpact: mostImpact,
     }
-    console.log("Passing mood log input to backend: ", moodLogInput)
 
     try {
       // Before invoking the mutation function
-      console.log("Creating moodlog mutation function is about to be invoked");
 
       // Invoke the mutation function
       const { data } = await createMoodLogMutationFn();
 
       // After the mutation function is invoked successfully with response
       if (data && data.createMoodLog) {
-        setMoodLogs(prevMoodLogs => [...prevMoodLogs, data.createMoodLog]);
-        console.log('Mood log data updated: ', data.createMoodLog);
+        const newMoodlogs = [...moodlogs]
+        newMoodlogs.push(data.createMoodLog)
+        setMoodLogs(newMoodlogs);
         localStorage.setItem('fromMoodLog', 'true');
         navigate('/recommend');
       }
@@ -149,7 +152,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
 
   return (
     <Layout currentPage={currentPage}>
-      <Calendar email={email} moodlogs={moodlogs} updateMoodLog={updateMoodLog} />
+      <Calendar email={email} moodlogs={moodlogs} updateMoodLog={updateMoodLog} displayMonth={displayMonth} updateDisplayMonth={setDisplayMonth} />
       <br/>
       <br/>
       <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />

@@ -7,6 +7,7 @@ Mood tracker to allow users to track their moods over time, and provide encourag
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
+- [References](#references)
 - [License](#license)
 - [Authors](#authors)
 
@@ -20,30 +21,39 @@ There are 3 key features:
 View our 
 1. [Initial ideation](https://www.figma.com/file/ZHsnruopY2JYJsaQqxQ0HS/1.-Mood-Log-Page?type=design&node-id=0%3A1&mode=design&t=Gb3aBS2kBKfZR4EE-1)
 2. [Database Schema](https://www.figma.com/file/ZHsnruopY2JYJsaQqxQ0HS/1.-Mood-Log-Page?type=design&node-id=92-120&mode=design&t=0oZOAOpWLjumyn9M-0)
+3. [Demo](https://drive.google.com/file/d/1r95nE41uql0Fe0XFjNovlRwDoHo3plu3/view?usp=share_link)
 
 ## Installation
 
 1. git clone the repo into your local machine
 2. cd into the platform-docker directory of the local repo
-3. Pull the latest MongoDB image by running ```$ docker pull mongodb/mongodb-community-server:latest ```
-4. Run the MongoDB container using ```$ docker run --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest```
-3. Run ```$ docker-compose build frontend server```
-4. Run ```$ docker-compose up -d server frontend```, this should start the frontend, server as well as MongoDB
-5. Visit localhost:3000 to view the application.
+3. Create a file named .env.server with the following environment variables populated. These are out setups, please replace the ports and URL respectively based on your local machine setup. Also, populate the JWT secret and replace the {}.
+```
+DB_NAME=moodtracker
+DB_PORT=27017
+BACKEND_PORT=8000
+SALT_ROUNDS=10
+TOKEN_EXP_IN_S=3600
+JWT_SECRET={}
+FRONTEND_URL=http://localhost:3000
+
+```
+4. Pull the latest MongoDB image by running ```$ docker pull mongodb/mongodb-community-server:latest ```
+5. Run the MongoDB container using ```$ docker run --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest```
+6. Run ```$ docker-compose build frontend server```
+7. Run ```$ docker-compose up -d server frontend```, this should start the frontend, server as well as MongoDB
+8. Visit localhost:3000 to view the application.
 
 ## Usage
 1. User authentication - When user first arrives at the web page, user will be prompted to input the email and password. User can also choose to register a new account. This feature is implemented using JWT token. To avoid having to verify the session token in every API call, we build the verification as a middleware of the express server. Redirection checker is also incorporated to redirect user away or to the login page depending on the presence of a valid session. User can logout of the application to remove the current session. 
 ```
 const verifyTokenMiddleware = (req, res, next) => {
   let tokenBase64;
-  console.log("Check request cookies", req.cookies)
-  // console.log(req)
 
   const bypassOperations = ["Login", "Register", "IntrospectionQuery", "Logout"]
   const bypassPaths = ['/callback'];  // Ensure the path matches your route
 
   if (bypassPaths.includes(req.path)) {
-    console.log(req.path)
     return next();
   }
   // Check if there's an operation name and it's a bypass operation
@@ -52,7 +62,6 @@ const verifyTokenMiddleware = (req, res, next) => {
     return next();
   }
   else if (!req.body) {
-    console.log('req no body: ', req.headers)
     return next();
   }
 
@@ -67,13 +76,9 @@ const verifyTokenMiddleware = (req, res, next) => {
   try {
     const token = Buffer.from(tokenBase64, 'base64').toString('ascii');
     const decoded = jwt.verify(token, jwtSecret);
-    console.log("Decoded token:", decoded); // Verify the decoded token content
     req.userId = decoded.userId;
     req.email = decoded.email;
 
-    console.log("Decoded token email: ", decoded.email);
-
-    console.log("Email set in req:", req.email); // Check if email is correctly set
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }
@@ -256,6 +261,14 @@ async function createPlaylistBasedOnFavoritesFinal(_, { email, moodvalue }, { db
   }
 }
 ```
+## References
+1. Material UI library (https://mui.com)
+2. node-jsonwebtoken (https://github.com/auth0/node-jsonwebtoken?tab=readme-ov-file#token-expiration-exp-claim)
+3. Ant design (https://ant.design/components/overview)
+4. React Bootstrap (https://react-bootstrap.github.io)
+5. Spotify Web API (linhttps://developer.spotify.com/documentation/web-apik)
+6. Spotify-Web-API-Node (https://www.npmjs.com/package/spotify-web-api-node)
+7. We have also utilised ChatGPT (https://chatgpt.com) for certain debugging tasks. 
 
 ## License
 

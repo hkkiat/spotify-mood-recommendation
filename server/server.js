@@ -62,6 +62,13 @@ const verifyTokenMiddleware = (req, res, next) => {
     const decoded = jwt.verify(token, jwtSecret);
     console.log("Decoded token:", decoded); // Verify the decoded token content
 
+    //console.log("Check date now", Date.now())
+    //if (Date.now() >= decoded.exp) {
+    //  res.clearCookie('_token');
+    //  return res.status(403).send("Token has expired");
+    //}
+
+
     req.userId = decoded.userId;
     req.email = decoded.email;
 
