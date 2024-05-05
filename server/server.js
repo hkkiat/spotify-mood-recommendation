@@ -60,6 +60,11 @@ const verifyTokenMiddleware = (req, res, next) => {
   try {
     const token = Buffer.from(tokenBase64, 'base64').toString('ascii');
     const decoded = jwt.verify(token, jwtSecret);
+
+    if (decoded.exp < Date.now()) {
+      return res.status(403).send("Token has expired");
+    }
+
     console.log("Decoded token:", decoded); // Verify the decoded token content
 
     req.userId = decoded.userId;

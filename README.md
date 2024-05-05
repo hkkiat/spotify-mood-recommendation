@@ -25,11 +25,22 @@ View our
 
 1. git clone the repo into your local machine
 2. cd into the platform-docker directory of the local repo
-3. Pull the latest MongoDB image by running ```$ docker pull mongodb/mongodb-community-server:latest ```
-4. Run the MongoDB container using ```$ docker run --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest```
-3. Run ```$ docker-compose build frontend server```
-4. Run ```$ docker-compose up -d server frontend```, this should start the frontend, server as well as MongoDB
-5. Visit localhost:3000 to view the application.
+3. Create a file named .env.server with the following environment variables populated. These are out setups, please replace the ports and URL respectively based on your local machine setup. Also, populate the JWT secret and replace the {}.
+```
+DB_NAME=moodtracker
+DB_PORT=27017
+BACKEND_PORT=8000
+SALT_ROUNDS=10
+TOKEN_EXP_IN_S=3600
+JWT_SECRET={}
+FRONTEND_URL=http://localhost:3000
+
+```
+4. Pull the latest MongoDB image by running ```$ docker pull mongodb/mongodb-community-server:latest ```
+5. Run the MongoDB container using ```$ docker run --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest```
+6. Run ```$ docker-compose build frontend server```
+7. Run ```$ docker-compose up -d server frontend```, this should start the frontend, server as well as MongoDB
+8. Visit localhost:3000 to view the application.
 
 ## Usage
 1. User authentication - When user first arrives at the web page, user will be prompted to input the email and password. User can also choose to register a new account. This feature is implemented using JWT token. To avoid having to verify the session token in every API call, we build the verification as a middleware of the express server. Redirection checker is also incorporated to redirect user away or to the login page depending on the presence of a valid session. User can logout of the application to remove the current session. 
