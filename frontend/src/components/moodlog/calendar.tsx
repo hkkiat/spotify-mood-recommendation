@@ -324,7 +324,7 @@ const Calendar: FC<CalendarProps> = ({ email, moodlogs, updateMoodLog, displayMo
 
     const prepareCalendarArray = (email: string, date: Dayjs, moodlogsOriginalData: DailyMoodLog[]) => {
         const controller = new AbortController();
-        if (moodlogsOriginalData.length !== 0) {
+        //if (moodlogsOriginalData.length !== 0) {
             generateMonthArray(email, date, moodlogsOriginalData, {
                 signal: controller.signal,
             })
@@ -341,7 +341,7 @@ const Calendar: FC<CalendarProps> = ({ email, moodlogs, updateMoodLog, displayMo
                 });
 
             requestAbortController.current = controller;
-        }
+        //}
 
     };
 
