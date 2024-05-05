@@ -47,14 +47,11 @@ FRONTEND_URL=http://localhost:3000
 ```
 const verifyTokenMiddleware = (req, res, next) => {
   let tokenBase64;
-  console.log("Check request cookies", req.cookies)
-  // console.log(req)
 
   const bypassOperations = ["Login", "Register", "IntrospectionQuery", "Logout"]
   const bypassPaths = ['/callback'];  // Ensure the path matches your route
 
   if (bypassPaths.includes(req.path)) {
-    console.log(req.path)
     return next();
   }
   // Check if there's an operation name and it's a bypass operation
@@ -63,7 +60,6 @@ const verifyTokenMiddleware = (req, res, next) => {
     return next();
   }
   else if (!req.body) {
-    console.log('req no body: ', req.headers)
     return next();
   }
 
@@ -78,13 +74,9 @@ const verifyTokenMiddleware = (req, res, next) => {
   try {
     const token = Buffer.from(tokenBase64, 'base64').toString('ascii');
     const decoded = jwt.verify(token, jwtSecret);
-    console.log("Decoded token:", decoded); // Verify the decoded token content
     req.userId = decoded.userId;
     req.email = decoded.email;
 
-    console.log("Decoded token email: ", decoded.email);
-
-    console.log("Email set in req:", req.email); // Check if email is correctly set
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }

@@ -14,6 +14,7 @@ import HappyRangeSlider from './happyrangeslider';
 import styles from '../../css/moodlog.module.css'
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
+import dayjs, { Dayjs } from 'dayjs';
 
 interface MoodLogProps {
   email: string;
@@ -30,6 +31,8 @@ interface DailyMoodLogInputFromCalendar {
 
 const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
   const [moodlogs, setMoodLogs] = useState<getAllMoodLogs_getAllMoodLogs[]>([]);
+  const [displayMonth, setDisplayMonth] = useState<Dayjs>(dayjs());
+
   const [overallFeeling, setOverallFeeling] = useState('');
   const [happyRangeValue, setHappyRangeValue] = useState(0.5);
   const [mostImpact, setMostImpact] = useState('');
@@ -64,9 +67,8 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
 
   // Load log data received from GraphQL query
   useEffect(() => {
-    if (!!moodLogsData ) {
+    if (!!moodLogsData) {
       setMoodLogs(moodLogsData.getAllMoodLogs);
-      console.log('Mood log data from GQL query: ', moodLogsData);
     }
   }, [moodLogsData]);
 
@@ -80,7 +82,6 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
       mostimpact: updatedMoodLog.mostimpact,
     }
     
-    console.log("moodLogInput passed from calendar component to gql:", moodLogInput);
 
     try {
       // Invoke the mutation function to create a mood log
@@ -96,7 +97,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
         newMoodlogs.push(data.createMoodLog)
         // Update the mood logs state with the newly created mood log
         setMoodLogs(newMoodlogs);
-        console.log('Mood log data updated: ', data.createMoodLog);
+        setDisplayMonth(dayjs(updatedMoodLog.logdatetime));
       }
     } catch (error) {
       console.error("Error occurred while creating mood log:", error);
@@ -129,11 +130,9 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
       happinesslevel: happyRangeValue,
       mostimpact: mostImpact,
     }
-    console.log("Passing mood log input to backend: ", moodLogInput)
 
     try {
       // Before invoking the mutation function
-      console.log("Creating moodlog mutation function is about to be invoked");
 
       // Invoke the mutation function
       const { data } = await createMoodLogMutationFn();
@@ -143,7 +142,6 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
         const newMoodlogs = [...moodlogs]
         newMoodlogs.push(data.createMoodLog)
         setMoodLogs(newMoodlogs);
-        console.log('Mood log data updated: ', data.createMoodLog);
         localStorage.setItem('fromMoodLog', 'true');
         navigate('/recommend');
       }
@@ -154,7 +152,7 @@ const MoodLog: FC<MoodLogProps> = ({ email, currentPage }) => {
 
   return (
     <Layout currentPage={currentPage}>
-      <Calendar email={email} moodlogs={moodlogs} updateMoodLog={updateMoodLog} />
+      <Calendar email={email} moodlogs={moodlogs} updateMoodLog={updateMoodLog} displayMonth={displayMonth} updateDisplayMonth={setDisplayMonth} />
       <br/>
       <br/>
       <OverallFeeling onOverallFeelingChange={handleOverallFeelingChange} />
