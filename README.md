@@ -7,6 +7,7 @@ Mood tracker to allow users to track their moods over time, and provide encourag
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
+- [References](#references)
 - [License](#license)
 - [Authors](#authors)
 
@@ -20,6 +21,7 @@ There are 3 key features:
 View our 
 1. [Initial ideation](https://www.figma.com/file/ZHsnruopY2JYJsaQqxQ0HS/1.-Mood-Log-Page?type=design&node-id=0%3A1&mode=design&t=Gb3aBS2kBKfZR4EE-1)
 2. [Database Schema](https://www.figma.com/file/ZHsnruopY2JYJsaQqxQ0HS/1.-Mood-Log-Page?type=design&node-id=92-120&mode=design&t=0oZOAOpWLjumyn9M-0)
+3. [Demo](https://drive.google.com/file/d/1r95nE41uql0Fe0XFjNovlRwDoHo3plu3/view?usp=share_link)
 
 ## Installation
 
@@ -259,6 +261,14 @@ async function createPlaylistBasedOnFavoritesFinal(_, { email, moodvalue }, { db
   }
 }
 ```
+## References
+1. Material UI library (https://mui.com)
+2. node-jsonwebtoken (https://github.com/auth0/node-jsonwebtoken?tab=readme-ov-file#token-expiration-exp-claim)
+3. Ant design (https://ant.design/components/overview)
+4. React Bootstrap (https://react-bootstrap.github.io)
+5. Spotify Web API (linhttps://developer.spotify.com/documentation/web-apik)
+6. Spotify-Web-API-Node (https://www.npmjs.com/package/spotify-web-api-node)
+7. We have also utilised ChatGPT (https://chatgpt.com) for certain debugging tasks. 
 
 ## License
 
